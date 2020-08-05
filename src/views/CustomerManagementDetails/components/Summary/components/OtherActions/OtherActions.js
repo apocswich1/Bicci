@@ -110,7 +110,7 @@ const OtherActions = props => {
       <Divider />
       <CardContent>
       <div className={classes.mainActions}>
-          {(customer.isActive)?(
+          {(customer.active)?(
             <Button onClick={disableAccount}>
             <NotInterestedIcon className={classes.buttonIcon} />
             {t("Disable")} {t("Customer")} {t("Account")}
@@ -121,21 +121,20 @@ const OtherActions = props => {
             {t("Enable")} {t("Customer")} {t("Account")}
           </Button>
           )}
-          <Button>
+          {/* <Button>
             <GetAppIcon className={classes.buttonIcon} />
             {t("Export Data")}
-          </Button>
+          </Button> */}
         </div>
         <Typography
           className={classes.notice}
           variant="body2"
         >
-          Remove this this customer’s data if he requested that, if not please
-          be aware that what has been deleted can never brough back
+          Remove this this customer
         </Typography>
         <Button className={classes.deleteButton} onClick={deleteAccount}>
           <DeleteIcon className={classes.buttonIcon} />
-          {t("Delete")} {t("Customer")} {t("Account")}
+          {t("Delete")} {t("Customer")} {/*t("Account")*/}
         </Button>
       </CardContent>
     </Card>

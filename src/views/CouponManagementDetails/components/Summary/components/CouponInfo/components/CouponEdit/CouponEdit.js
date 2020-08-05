@@ -28,6 +28,15 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import firebase from 'utils/firebase';
 import translate from 'translate';
+import config from 'config';
+import Chip from '@material-ui/core/Chip';
+import Paper from '@material-ui/core/Paper';
+import TagFacesIcon from '@material-ui/icons/TagFaces';
+import { green } from '@material-ui/core/colors';
+import Radio from '@material-ui/core/Radio';
+import { withStyles } from '@material-ui/core/styles';
+
+const service = config.servicio;
 
 const t = translate;
 
@@ -44,6 +53,17 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto',
     maxWidth: '100%'
   },
+  roote: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    listStyle: 'none',
+    padding: theme.spacing(0.5),
+    margin: 0,
+  },
+  chip: {
+    margin: theme.spacing(0.5),
+  },
   container: {
     marginTop: theme.spacing(3)
   },
@@ -59,72 +79,112 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+
+const GreenRadio = withStyles({
+  root: {
+    color: green[400],
+    '&$checked': {
+      color: green[600],
+    },
+  },
+  checked: {},
+})((props) => <Radio color="default" {...props} />);
+
 const CouponEdit = props => {
-  const { open, onClose, coupon, actualizar,  cboFranchises, className, ...rest } = props;
+  const { open, onClose, coupon, actualizar, cboRegion, cboRestaurants, className, chips, ...rest } = props;
 
   const classes = useStyles();
-  const [franchiseID, setFranchiseID] = useState('');
-  const [franchiseName, setFranchiseName] = useState('');
+  const [restaurantID, setRestaurantID] = useState(coupon.restaurantID);
+  const [restaurantName, setRestaurantName] = useState('');
+  const [modeID, setModeID] = useState(coupon.mode);
+  const [modeName, setModeName] = useState('');
   const [global, setGlobal] = useState('');
   const [venueID, setVenueID] = useState('');
-  const [cboVenues, setCboVenues] = useState([]);
+  const [cboVenues, setCboVenues] = useState([...cboRestaurants]);
+  const [places, setPlaces] = useState([]);
+  const [selectedValue, setSelectedValue] = React.useState('a');
+  const [cboDistrict, setCboDistrict] = React.useState([]);
+  const [cboZones, setCboZones] = React.useState([]);
   const [formState, setFormState] = useState({
-    ...coupon, cboVenues, venueID, franchiseID
+    ...coupon, cboVenues, venueID, restaurantID, places, restaurantName, modeID,cboRestaurants,cboDistrict,cboZones
   });
 
-   //const [startDate, setStartDate] = useState(moment().subtract(7, 'days'));
-   const [startDate, setStartDate] = useState(moment(coupon.expirationDate));
-   //const [endDate, setEndDate] = useState(moment());
-   const [endDate, setEndDate] = useState(moment(coupon.expirationDate));
-   const [selectEdge, setSelectEdge] = useState(null);
-   //const [calendarDate, setCalendarDate] = useState(moment());
-   const [calendarDate, setCalendarDate] = useState(moment(coupon.expirationDate));
- 
-   const [selectedDate, setSelectedDate] = React.useState(moment(coupon.expirationDate));
-   console.log(selectedDate);
-   const handleDateChange = date => {
-     setSelectedDate(date);
-   };
- 
-   const handleCalendarOpen = edge => {
-     setSelectEdge(edge);
-   };
- 
-   const handleCalendarChange = date => {
-     setCalendarDate(date);
-   };
- 
-   const handleCalendarClose = () => {
-     setCalendarDate(moment());
-     setSelectEdge(null);
-   };
- 
-   const handleCalendarAccept = date => {
-     setCalendarDate(moment());
- 
-     if (selectEdge === 'start') {
-       setStartDate(date);
- 
-       if (moment(date).isAfter(endDate)) {
-         setEndDate(date);
-       }
-     } else {
-       setEndDate(date);
- 
-       if (moment(date).isBefore(startDate)) {
-         setStartDate(date);
-       }
-     }
- 
-     setSelectEdge(null);
-   };
- 
-   const openn = Boolean(selectEdge);
- 
-    
+
+  const [chipData, setChipData] = useState(chips
+    // { key: 0, label: 'Angular' },
+    // { key: 1, label: 'jQuery' },
+    // { key: 2, label: 'Polymer' },
+    // { key: 3, label: 'React' },
+    // { key: 4, label: 'Vue.js' },
+    // { key: 5, label: 'Angular' },
+    // { key: 6, label: 'jQuery' },
+    // { key: 7, label: 'Polymer' },
+    // { key: 8, label: 'React' },
+    // { key: 9, label: 'Vue.js' },
+  );
+
+  //const [startDate, setStartDate] = useState(moment().subtract(7, 'days'));
+  const [startDate, setStartDate] = useState(moment(coupon.expirationDate));
+  //const [endDate, setEndDate] = useState(moment());
+  const [endDate, setEndDate] = useState(moment(coupon.expirationDate));
+  const [selectEdge, setSelectEdge] = useState(null);
+  //const [calendarDate, setCalendarDate] = useState(moment());
+  const [calendarDate, setCalendarDate] = useState(moment(coupon.expirationDate));
+
+  const [selectedDate, setSelectedDate] = React.useState(moment(coupon.expirationDate));
+  
+
+  const handleChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+
+  const handleDateChange = date => {
+    setSelectedDate(date);
+  };
+
+  const handleCalendarOpen = edge => {
+    setSelectEdge(edge);
+  };
+
+  const handleCalendarChange = date => {
+    setCalendarDate(date);
+  };
+
+  const handleCalendarClose = () => {
+    setCalendarDate(moment());
+    setSelectEdge(null);
+  };
+
+  const handleCalendarAccept = date => {
+    setCalendarDate(moment());
+
+    if (selectEdge === 'start') {
+      setStartDate(date);
+
+      if (moment(date).isAfter(endDate)) {
+        setEndDate(date);
+      }
+    } else {
+      setEndDate(date);
+
+      if (moment(date).isBefore(startDate)) {
+        setStartDate(date);
+      }
+    }
+
+    setSelectEdge(null);
+  };
+
+  const openn = Boolean(selectEdge);
+
+
   if (!open) {
     return null;
   }
+
+  const handleDelete = (chipToDelete) => () => {
+    setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
+  };
 
   const handleFieldChange = event => {
     event.persist();
@@ -137,31 +197,81 @@ const CouponEdit = props => {
     }));
   };
 
-  const handleChangeFranchise = async event => {
+  const handleChangeRegion = async event => {
     event.persist();
-    let venues = [];
-    const venuesRef = await firebase.firestore().collection('franchises').doc(event.target.value)
-    .collection('venues').get();
+    const regionRef = await firebase.firestore().collection('zones').doc(event.target.value)
+    .collection('districts').get();
+
         setFormState(formState => ({
           ...formState,
-          'franchiseID':event.target.value,
-          'franchiseName':event._targetInst.memoizedProps.children[0][0],
-          'cboVenues': venuesRef.docs.map(d => { return d.data() })
+          'regionID':event.target.value,
+          'regionName':event._targetInst.memoizedProps.children[0][0],
+          'cboDistrict': regionRef.docs.map(d => { return d.data() })
         }));      
-    
-  
-    console.log(formState);
   }
-  
-  const handleChangeVenue = event => {
+
+  const handleChangeDistrict = async event => {
+    event.persist();
+    const districtRef = await firebase.firestore().collection('zones').doc(formState.regionID)
+    .collection('districts').doc(event.target.value).collection('zones').get();
+
+        setFormState(formState => ({
+          ...formState,
+          'districtID':event.target.value,
+          'districtName':event._targetInst.memoizedProps.children[0][0],
+          'cboZones': districtRef.docs.map(d => { return d.data() })
+        }));      
+  }
+
+  const handleChangeZone = async event => {
     event.persist();
     
         setFormState(formState => ({
           ...formState,
-          'venueID':event.target.value,
-          'venueName':event._targetInst.memoizedProps.children[0][0],
+          'zoneID':event.target.value,
+          'zoneName':event._targetInst.memoizedProps.children[0][0]
         }));      
-    console.log(formState);
+  }
+
+
+  const handleChangeRestaurant = async event => {
+    event.persist();
+    setFormState(formState => ({
+      ...formState,
+      'restaurantID': event.target.value,
+      'restaurantName': event._targetInst.memoizedProps.children[0][0],
+      'cboRestaurants': (cboRestaurants) => cboRestaurants.filter((chip) => chip.key !== event.target.value),
+      'places': [...places, event.target.value]
+    }));
+
+    setChipData(
+      chipData => [...chipData,{key: event.target.value, label: event._targetInst.memoizedProps.children[0][0]}]
+      );
+
+    setPlaces(
+        places => [...places, event.target.value]
+    );
+
+  }
+
+  const handleChangeMode = async event => {
+    event.persist();
+    setFormState(formState => ({
+      ...formState,
+      'modeID': event.target.value,
+      'modeName': event._targetInst.memoizedProps.children[0][0]
+    }));
+
+  }
+
+  const handleChangeTicket = async event => {
+    event.persist();
+    
+        setFormState(formState => ({
+          ...formState,
+          'ticketPromedioID':event.target.value,
+          'ticketPromedioName':event._targetInst.memoizedProps.children[0][0]
+        }));      
   }
 
   const validateForm = () => {
@@ -171,13 +281,13 @@ const CouponEdit = props => {
     let venueIDErrorMessage = "";
     let amountErrorMessage = "";
     let amountError = "";
-    
-    if(!formState.code){
+
+    if (!formState.code) {
       codeError = "Debe introducir un code";
       codeErrorMessage = "Debe introducir un code";
     }
 
-    if(!formState.amount){
+    if (!formState.amount) {
       amountError = "Debe introducir un email valido";
       amountErrorMessage = "Debe introducir un email";
     }
@@ -202,66 +312,104 @@ const CouponEdit = props => {
     */
 
 
-   if(codeError || amountError){
-    setFormState(formState => ({
-      ...formState,
-      codeError,amountError,
-      codeErrorMessage,amountErrorMessage
-    }));
-    return false;
+    if (codeError || amountError) {
+      setFormState(formState => ({
+        ...formState,
+        codeError, amountError,
+        codeErrorMessage, amountErrorMessage
+      }));
+      return false;
+    }
+    return true;
   }
-  return true;
-}
 
   const handleSave = () => {
-  //  event.preventDefault();
-    console.log(formState);
+    //  event.preventDefault();
     const isValid = validateForm();
     let msg = "Usuario actualizado exitosamente!";
-    if(isValid){
-      let fecha = new Date(moment(endDate).format('YYYY-MM-DD').toString()+"T"+moment(selectedDate).add('hours',3).format('HH:mm').toString()+":00Z");
-      
+    if (isValid) {
+      let fecha = new Date(moment(endDate).format('YYYY-MM-DD').toString() + "T" + moment(selectedDate).add('hours', 3).format('HH:mm').toString() + ":00Z");
+
       let params;
-      if(!formState.global){
-        params = {
-          "id":formState.id,
-          "active": formState.active ? formState.active : true,
-          "global": formState.global ? formState.global : false,
-          "code": formState.code,
-          "amount": formState.amount,
-          "expirationDate": fecha,
-          "venueID":formState.venueID,
-          "discount":+formState.discount
+      if (!formState.global) {
+        if(selectedValue === 'a'){
+          params = {
+            "id": formState.id,
+            "active": formState.active ? formState.active : true,
+            "global": formState.global ? formState.global : false,
+            "code": formState.code,
+            "amount": +formState.amount,
+            "expirationDate": fecha,
+            "restaurants": chipData.map((item) => {return item.key}),
+            "stock": +formState.stock,
+            "mode": formState.modeID ? +formState.modeID : +1,
+            "type":selectedValue
+          }
+        }else if(selectedValue === 'b'){
+          params = {
+            "id": formState.id,
+            "active": formState.active ? formState.active : true,
+            "global": formState.global ? formState.global : false,
+            "code": formState.code,
+            "amount": +formState.amount,
+            "expirationDate": fecha,
+            "restaurants": [],
+            "stock": +formState.stock,
+            "mode": formState.modeID ? +formState.modeID : +1,
+            "regionName": formState.regionName,
+            "regionID": formState.regionID,
+            "districtName": formState.districtName,
+            "districtID": formState.districtID,
+            "zoneName": formState.zoneName,
+            "zoneID": formState.zoneID,
+            "type":selectedValue
+          }
+        }else{
+          params = {
+            "id": formState.id,
+            "active": formState.active ? formState.active : true,
+            "global": formState.global ? formState.global : false,
+            "code": formState.code,
+            "amount": +formState.amount,
+            "expirationDate": fecha,
+            "restaurants": [],
+            "stock": +formState.stock,
+            "mode": formState.modeID ? +formState.modeID : +1,
+            "ticketPromedioName": formState.ticketPromedioName,
+            "ticketPromedioID": formState.ticketPromedioID,
+            "type":selectedValue
+          }
         }
-      }else{
+        
+      } else {
         params = {
-          "id":formState.id,
+          "id": formState.id,
           "active": formState.active ? formState.active : true,
           "global": formState.global ? formState.global : false,
           "code": formState.code,
-          "amount": formState.amount,
-          "expirationDate": fecha
+          "amount": +formState.amount,
+          "expirationDate": fecha,
+          "stock": +formState.stock,
+          "mode": formState.modeID ? +formState.modeID : +1
         }
       }
 
-    console.log(params);
-    
-    fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/couponUpdateAdmin', {
+
+      fetch(service + 'couponUpdateAdmin', {
         method: 'post',
         mode: 'cors',
         body: JSON.stringify(params)
       }).then(function (respuesta) {
         respuesta.json().then(body => {
-          console.log(body);
-          actualizar(msg,body);
+          actualizar(msg, body);
         });
       }).catch(function (err) {
         // Error :(
       });
-    onClose();
+      onClose();
     }
   };
-console.log(new Date(endDate));
+
   return (
     <Modal
       onClose={onClose}
@@ -308,13 +456,13 @@ console.log(new Date(endDate));
               >
                 <TextField
                   fullWidth
-                  label={t("amount")}
-                  name="amount"
+                  label={t("Stock")}
+                  name="stock"
                   onChange={handleFieldChange}
-                  value={formState.amount}
+                  value={formState.stock}
                   variant="outlined"
-                  error={formState.amountError}
-                  helperText={formState.amountErrorMessage}
+                  error={formState.stockError}
+                  helperText={formState.stockErrorMessage}
                 />
               </Grid>
               <Grid
@@ -348,28 +496,28 @@ console.log(new Date(endDate));
                 />
               </Grid>
               <Grid
-          className={classes.dates}
-          item
-          lg={6}
-          xs={12}
-        >
-          <ButtonGroup variant="contained" fullWidth>
-            <Button onClick={() => handleCalendarOpen('end')}>
-              <CalendarTodayIcon className={classes.calendarTodayIcon} />
-              {endDate.format('DD MM YYYY')}
-            </Button>
-          </ButtonGroup>
-        </Grid>
-                <DatePicker
-                  //maxDate={moment()}
-                  onAccept={handleCalendarAccept}
-                  onChange={handleCalendarChange}
-                  onClose={handleCalendarClose}
-                  open={openn}
-                  style={{ display: 'none' }} // Temporal fix to hide the input element
-                  value={calendarDate}
-                  variant="dialog"
-                />
+                className={classes.dates}
+                item
+                lg={6}
+                xs={12}
+              >
+                <ButtonGroup variant="contained" fullWidth>
+                  <Button onClick={() => handleCalendarOpen('end')}>
+                    <CalendarTodayIcon className={classes.calendarTodayIcon} />
+                    {endDate.format('DD MM YYYY')}
+                  </Button>
+                </ButtonGroup>
+              </Grid>
+              <DatePicker
+                //maxDate={moment()}
+                onAccept={handleCalendarAccept}
+                onChange={handleCalendarChange}
+                onClose={handleCalendarClose}
+                open={openn}
+                style={{ display: 'none' }} // Temporal fix to hide the input element
+                value={calendarDate}
+                variant="dialog"
+              />
               <Grid
                 className={classes.dates}
                 item
@@ -377,54 +525,142 @@ console.log(new Date(endDate));
                 xs={12}
               >
                 <ButtonGroup variant="contained" fullWidth>
-                <Button>
-                  <KeyboardTimePicker
-                  id="time-picker"
-                  value={selectedDate}
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  KeyboardButtonProps={{
-                    'aria-label': 'change time',
-                  }}
-                  variant="dialog"
-                />
-                </Button>
+                  <Button>
+                    <KeyboardTimePicker
+                      id="time-picker"
+                      value={selectedDate}
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change time',
+                      }}
+                      variant="dialog"
+                    />
+                  </Button>
                 </ButtonGroup>
               </Grid>
               <Grid
                 item
                 md={6}
+                xs={6}
+              >
+                <InputLabel id="demo-simple-select-label">{t("mode")}</InputLabel>
+                <Select
+                  name="modeName"
+                  value={formState.modeID}
+                  onChange={handleChangeMode}
+                  style={{ width: "320px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  <MenuItem value={1}>Monto Fijo</MenuItem>
+                  <MenuItem value={2}>Porcentaje</MenuItem>
+                  <MenuItem value={3}>Envío Gratis</MenuItem>
+                </Select>
+              </Grid>
+              <Grid
+                item
+                md={6}
                 xs={12}
-                hidden={formState.global ? true : false }
               >
                 <TextField
                   fullWidth
-                  label={t("Discount")}
-                  name="discount"
+                  label={formState.modeID == 2 ? t("Porcentaje") : t("Valor")}
+                  name="amount"
                   onChange={handleFieldChange}
-                  value={formState.discount}
+                  value={formState.amount}
                   variant="outlined"
-                  error={formState.discountError}
-                  helperText={formState.discountErrorMessage}
+                  error={formState.amountError}
+                  helperText={formState.amountErrorMessage}
                 />
               </Grid>
               <Grid
                 item
+                md={4}
+                xs={4}
+                hidden={formState.global ? true : false}
+              >
+                <Radio
+        checked={selectedValue === 'a'}
+        onChange={handleChange}
+        value="a"
+        name="radio-button-demo"
+        inputProps={{ 'aria-label': 'A' }}
+      /> Restaurant
+              </Grid>
+              <Grid
+                item
+                md={4}
+                xs={4}
+                hidden={formState.global ? true : false}
+              >
+                <Radio
+        checked={selectedValue === 'b'}
+        onChange={handleChange}
+        value="b"
+        name="radio-button-demo"
+        inputProps={{ 'aria-label': 'B' }}
+      /> Zona
+              </Grid>
+              <Grid
+                item
+                md={4}
+                xs={4}
+                hidden={formState.global ? true : false}
+              >
+                <GreenRadio
+        checked={selectedValue === 'c'}
+        onChange={handleChange}
+        value="c"
+        name="radio-button-demo"
+        inputProps={{ 'aria-label': 'C' }}
+      /> Ticket Promedio
+              </Grid>
+              <Grid
+                item
                 md={12}
                 xs={12}
-                hidden={formState.global ? true : false }
+                hidden={selectedValue === 'a' && !formState.global ? false : true }
               >
-                <InputLabel id="demo-simple-select-label">{t("Franchise")}</InputLabel>
+                    <Paper component="ul" className={classes.roote}>
+                {chipData.map((data) => {
+                  let icon;
+
+                  if (data.label === 'React') {
+                    icon = <TagFacesIcon />;
+                  }
+
+                  return (
+                    <li key={data.key}>
+                      <Chip
+                        icon={icon}
+                        label={data.label}
+                        onDelete={data.label === 'React' ? undefined : handleDelete(data)}
+                        className={classes.chip}
+                      />
+                    </li>
+                  );
+                })}
+                </Paper>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+                hidden={selectedValue === 'a' && !formState.global ? false : true }
+              >
+                <InputLabel id="demo-simple-select-label">{t("restaurant")}</InputLabel>
                 <Select
-                  name="franchiseName"
-                  value={formState.franchiseID}
-                  onChange={handleChangeFranchise}
+                  name="restaurantName"
+                  value=""
+                  onChange={handleChangeRestaurant}
                   style={{ width: "520px" }}
                 >
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  {cboFranchises.map(item => (
+                  {cboRestaurants.map(item => (
                     <MenuItem value={item.id}>{item.name}</MenuItem>
                   ))}
                 </Select>
@@ -433,25 +669,88 @@ console.log(new Date(endDate));
                 item
                 md={12}
                 xs={12}
-                hidden={formState.global ? true : false }
+                hidden={selectedValue === 'b'  && !formState.global ? false : true }
               >
-                <InputLabel id="demo-simple-select-label">{t("Venue")}</InputLabel>
+                <InputLabel id="demo-simple-select-label">{t("Región")}</InputLabel>
                 <Select
-                  name="venueName"
-                  value={formState.venueID}
-                  onChange={handleChangeVenue}
+                  name="regionName"
+                  value={formState.regionID}
+                  onChange={handleChangeRegion}
                   style={{ width: "520px" }}
                 >
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  {formState.cboVenues.map((item,i) => (
+                  {cboRegion.map(item => (
                     <MenuItem value={item.id}>{item.name}</MenuItem>
                   ))}
                 </Select>
               </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+                hidden={selectedValue === 'b'  && !formState.global ? false : true }
+              >
+                <InputLabel id="demo-simple-select-label">{t("Districts")}</InputLabel>
+                <Select
+                  name="districtName"
+                  value={formState.districtID}
+                  onChange={handleChangeDistrict}
+                  style={{ width: "520px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {formState.cboDistrict.map(item => (
+                    <MenuItem value={item.id}>{item.name}</MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+                hidden={selectedValue === 'b'  && !formState.global ? false : true }
+              >
+                <InputLabel id="demo-simple-select-label">{t("Zones")}</InputLabel>
+                <Select
+                  name="zoneName"
+                  value={formState.zoneID}
+                  onChange={handleChangeZone}
+                  style={{ width: "520px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {formState.cboZones.map(item => (
+                    <MenuItem value={item.id}>{item.zone}</MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}  
+                hidden={selectedValue === 'c'  && !formState.global ? false : true }              
+              >
+                <InputLabel id="demo-simple-select-label">{t("Ticket promedio")}</InputLabel>
+                <Select
+                  name="ticketPromedioName"
+                  value={formState.ticketPromedioID}
+                  onChange={handleChangeTicket}
+                  style={{ width: "520px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                    <MenuItem value={1}>Menor a 10.000</MenuItem>
+                    <MenuItem value={2}>Entre 10.001 y 20.000</MenuItem>
+                    <MenuItem value={3}>Mayor a 20.000</MenuItem>
+                </Select>
+              </Grid>
               <Grid item />
-              
+
             </Grid>
           </CardContent>
           <CardActions className={classes.actions}>
@@ -487,7 +786,7 @@ CouponEdit.propTypes = {
 
 CouponEdit.defaultProps = {
   open: false,
-  onClose: () => {}
+  onClose: () => { }
 };
 
 export default CouponEdit;

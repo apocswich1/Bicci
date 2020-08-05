@@ -130,21 +130,21 @@ const CustomerEdit = props => {
       roleErrorMessage = "Debe introducir un role valido";
     }
 
-    if(!formState.phone){
-      phoneError = "Debe introducir un telefono valido";
-      phoneErrorMessage = "Debe introducir un telefono valido";
-    }
+    // if(!formState.phone){
+    //   phoneError = "Debe introducir un telefono valido";
+    //   phoneErrorMessage = "Debe introducir un telefono valido";
+    // }
 
     if(!formState.language || (formState.language=="")){
       languageError = "Debe introducir un lenguage valido";
       languageErrorMessage = "Debe introducir un lenguage valido";
     }
 
-    if(nameError || emailError || passwordError || roleError || languageError || roleError || phoneError){
+    if(nameError || emailError || passwordError || roleError || languageError || roleError){
       setFormState(formState => ({
         ...formState,
-        nameError,emailError,passwordError,roleError,phoneError,passwordRepeatError,languageError,
-        nameErrorMessage,emailErrorMessage,passwordErrorMessage,passwordRepeatErrorMessage,roleErrorMessage,phoneErrorMessage,languageErrorMessage
+        nameError,emailError,passwordError,roleError,passwordRepeatError,languageError,
+        nameErrorMessage,emailErrorMessage,passwordErrorMessage,passwordRepeatErrorMessage,roleErrorMessage,languageErrorMessage
       }));
       return false;
     }
@@ -164,7 +164,7 @@ const CustomerEdit = props => {
       "name":formState.name,
       "role":formState.role,
       "email":formState.email,
-      "phone":formState.phone,
+     // "phone":formState.phone,
       "language":formState.language ? formState.language : "es",
       "agree_terms":formState.agree_terms ? formState.agree_terms : true
     }
@@ -258,7 +258,7 @@ const CustomerEdit = props => {
                   helperText={formState.languageErrorMessage}
                 />
               </Grid> */}
-              <Grid
+              {/* <Grid
                 item
                 md={6}
                 xs={12}
@@ -272,11 +272,11 @@ const CustomerEdit = props => {
                   variant="outlined"
                   error={formState.phoneError}
                   helperText={formState.phoneErrorMessage}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
-                  }}
+                  // InputProps={{
+                  //   startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
+                  // }}
                 />
-              </Grid>
+              </Grid> */}
               {/* <Grid
                 item
                 md={12}

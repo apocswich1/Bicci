@@ -22,6 +22,8 @@ import moment from 'moment';
 import { Label } from 'components';
 import { OrderEdit } from './components';
 import translate from 'translate';
+import DeliveryStatus from 'utils/DeliveryStatus';
+import tiempo from 'utils/tiempo';
 
 const t = translate;
 const useStyles = makeStyles(theme => ({
@@ -42,7 +44,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const OrderInfo = props => {
-  const { order, className, actualizar, ...rest } = props;
+  const { order, className, claim, datosUser, actualizar, ...rest } = props;
 
   const classes = useStyles();
 
@@ -81,6 +83,9 @@ const OrderInfo = props => {
     };
   }, []);
   
+console.log(claim);
+console.log(datosUser);
+
   return (
 
     <Card
@@ -101,18 +106,38 @@ const OrderInfo = props => {
               <TableCell>{order.userName}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t("Prowasher name")}</TableCell>
-              <TableCell>{order.washerName}</TableCell>
+              <TableCell>{t("Driver name")}</TableCell>
+              <TableCell>{order.driverName}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t("Place Name")}</TableCell>
+              <TableCell>{order.placeName}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("Date")}</TableCell>
-              <TableCell>{new String(moment(order.date).format('DD/MM/YY'))}</TableCell>
+              <TableCell>{tiempo.fecha(order.date)}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t("Service date")}</TableCell>
-              <TableCell>{new String(moment(order.serviceDate).format('DD/MM/YY'))}</TableCell>
+              <TableCell>{t("CreatedAt")}</TableCell>
+              <TableCell>{tiempo.fecha(order.createdAt)}</TableCell>
             </TableRow>
-            <TableRow>
+            {
+            datosUser ? (
+                <TableRow>
+              <TableCell>{t("Empresa")}</TableCell>
+              <TableCell>{datosUser[0].companyName}</TableCell>
+            </TableRow>
+            ) : ("")
+            }
+            {
+            datosUser ? (
+                <TableRow>
+              <TableCell>{t("Centro")}</TableCell>
+              <TableCell>{datosUser[0].centerName}</TableCell>
+            </TableRow>
+            ) : ("")
+            }
+            {/* <TableRow>
               <TableCell>{t("Card brand")}</TableCell>
               <TableCell>{order.carBrand}</TableCell>
             </TableRow>
@@ -127,22 +152,26 @@ const OrderInfo = props => {
             <TableRow>
               <TableCell>{t("Card patent")}</TableCell>
               <TableCell>{order.carPatent}</TableCell>
-            </TableRow>
-            <TableRow>
+            </TableRow> */}
+            {/* <TableRow>
               <TableCell>{t("Code")}</TableCell>
               <TableCell>{order.code ? order.code : 'undefined'}</TableCell>
-            </TableRow>
+            </TableRow> */}
             <TableRow>
               <TableCell>{t("Comment")}</TableCell>
               <TableCell>{order.comment ? order.comment : "undefined"}</TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
               <TableCell>{t("Evaluation comment")}</TableCell>
               <TableCell>{order.evaluationComment ? order.evaluationComment : 'undefined'}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("Evaluation rate")}</TableCell>
               <TableCell>{order.evaluationRate}</TableCell>
+            </TableRow> */}
+            <TableRow>
+              <TableCell>{t("Instructions")}</TableCell>
+              <TableCell>{order.instructions ? order.instructions : 'undefined'}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("Indications")}</TableCell>
@@ -151,24 +180,25 @@ const OrderInfo = props => {
             <TableRow>
               <TableCell>{t("Status")}</TableCell>
               <TableCell>
-              {order.status==1 && "Solicitado"}
-                        {order.status==2 && "Asignado"}
-                        {order.status==3 && "En camino"}
-                        {order.status==4 && "Llegado"}
-                        {order.status==5 && "Lavando"}
-                        {order.status==6 && "Lavado Finalizado"}
-                        {order.status==7 && "Cerrado"}
-                        {order.status==-1 && "Cancelado"}
+              {DeliveryStatus(order.status)}
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t("Total price")}</TableCell>
-              <TableCell>{new String(order.totalPrice)}</TableCell>
+              <TableCell>{t("Pay Method")}</TableCell>
+              <TableCell>{order.payMethod ? order.payMethod : "Efectivo"}</TableCell>
             </TableRow>
             <TableRow>
+              <TableCell>{t("Tip")}</TableCell>
+              <TableCell>{order.tip}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{t("Total price")}</TableCell>
+              <TableCell>{new String(order.totalAmount)}</TableCell>
+            </TableRow>
+            {/* <TableRow>
               <TableCell>{t("Total time")}</TableCell>
               <TableCell>{new String(order.totalTime)}</TableCell>
-            </TableRow>
+            </TableRow> */}
             {/* <TableRow>
               <TableCell>Email</TableCell>
               <TableCell>
@@ -191,17 +221,25 @@ const OrderInfo = props => {
           <Table>
           <TableBody>
             <TableRow>
-              <TableCell>{t("address")}</TableCell>
-              <TableCell>{order.address}</TableCell>
+              <TableCell>{t("fromAddress")}</TableCell>
+              <TableCell>{order.fromAddress}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell>{t("toAddress")}</TableCell>
+              <TableCell>{order.toAddress}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </CardContent>
       <CardActions className={classes.actions}>
-        <Button onClick={handleEditOpen}>
+        {/* <Button onClick={handleEditOpen}>
           <EditIcon className={classes.buttonIcon} />
           {t("Assign prowasher")}
-        </Button>
+        </Button> */}
         {/*}  <Button>
           <LockOpenIcon className={classes.buttonIcon} />
           Reset &amp; Send Password

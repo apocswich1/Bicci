@@ -95,8 +95,8 @@ const CategoryInfo = props => {
         <Table>
           <TableBody>
           <TableRow>
-              <TableCell>Uid</TableCell>
-              <TableCell>{category.uid}</TableCell>
+              <TableCell>Id</TableCell>
+              <TableCell>{category.id}</TableCell>
             </TableRow>
           <TableRow>
               <TableCell>{t("name")}</TableCell>

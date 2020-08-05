@@ -7,6 +7,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { useSelector } from 'react-redux';
+import firebase from 'utils/firebase';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -60,78 +61,95 @@ const OrderManagementList = () => {
   const handleChangeSearch = event => {
     setSearch(event.target.value);
   }
-  
+
   function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
   }
-  
-  const sortAsc = (array, label)=> {
+
+  const sortAsc = (array, label) => {
     const data = array.sort(function (a, b) {
-      
+
       if (b[label] === "") {
         return 0;
       }
       if (b[label] > a[label]) {
-          return -1;
+        return -1;
       }
       if (a[label] > b[label]) {
-          return 1;
+        return 1;
       }
       return 0;
-  });
+    });
 
-  console.log(data);
-  
-  setOrders(data);
-  setSearch([]);
-  return;
-}
+    console.log(data);
 
-const sortDesc = (array,label)=> {
-  const data = array.sort(function (a, b) {
-    if (a[label] === "") {
-      return 0;
-    }
-    if (a[label] > b[label]) {
+    setOrders(data);
+    setSearch([]);
+    return;
+  }
+
+  const sortDesc = (array, label) => {
+    const data = array.sort(function (a, b) {
+      if (a[label] === "") {
+        return 0;
+      }
+      if (a[label] > b[label]) {
         return -1;
-    }
-    if (b[label] > a[label]) {
+      }
+      if (b[label] > a[label]) {
         return 1;
-    }
-    return 0;
-});
+      }
+      return 0;
+    });
 
-console.log(data);
+    console.log(data);
 
-  setOrders(data);
-  setSearch([]);
-  return;
-}
+    setOrders(data);
+    setSearch([]);
+    return;
+  }
 
   useEffect(() => {
     let mounted = true;
     let usuarios = [];
     setLoading(true);
-    const fetchOrders = () => {
-      fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdmin', {
-        method: 'get',
-        mode: 'cors',
-      }).then(function (respuesta) {
-        respuesta.json().then(body => {
-          if(role !== "ADMIN"){
-            setOrders(body.usuarios.filter(item => item.franchiseID == session.user.id));
-            setOrdersBkp(body.usuarios.filter(item => item.franchiseID == session.user.id));
-          }else {
-            setOrders(body.usuarios);
-            setOrdersBkp(body.usuarios);
-          }
+    const fetchOrders = async () => {
+      const refOrders = await firebase.firestore().collection('orders').orderBy('date', 'desc').get();
+      const resultado = await refOrders.docs.map(item => { return item.data() });
+      
+      if (role !== "ADMIN") {
+        let ref = await firebase.firestore().collection('restaurants').where('starredBy','==',session.user.id).get();
+        let result = await ref.docs.map(item => {return item.data()});
+        let restaurantID = result[0].id;
+        
+        setOrders(resultado.filter(item => item.placeID == restaurantID));
+        setOrdersBkp(resultado.filter(item => item.placeID == restaurantID));
+        //setOrders(resultado);
+        //setOrdersBkp(resultado);
+      } else {
+        setOrders(resultado);
+        setOrdersBkp(resultado);
+      }
+      setLoading(false);
+      //   fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdmin', {
+      //     method: 'get',
+      //     mode: 'cors',
+      //   }).then(function (respuesta) {
+      //     respuesta.json().then(body => {
+      //       if(role !== "ADMIN"){
+      //         setOrders(body.usuarios.filter(item => item.franchiseID == session.user.id));
+      //         setOrdersBkp(body.usuarios.filter(item => item.franchiseID == session.user.id));
+      //       }else {
+      //         setOrders(body.usuarios);
+      //         setOrdersBkp(body.usuarios);
+      //       }
 
-          //console.log(body.usuarios);
-          setLoading(false);
-        });
-      }).catch(function (err) {
-        // Error :(
-      });
+      //       //console.log(body.usuarios);
+      //       setLoading(false);
+      //     });
+      //   }).catch(function (err) {
+      //     // Error :(
+      //   });
     };
 
     fetchOrders();
@@ -142,120 +160,156 @@ console.log(data);
   }, []);
 
 
-  const actualizar = (msg,bodyres)=>{
+  const actualizar = async (msg, bodyres) => {
     const mensaje = msg;
     const res = bodyres;
-
     console.log("Actualizando...");
     setLoading(true);
-      fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdmin', {
-        method: 'get',
-        mode: 'cors',
-      }).then(function (respuesta) {
-        respuesta.json().then(body => {
+    const refOrders = await firebase.firestore().collection('orders').orderBy('date', 'desc').get();
+    const resultado = await refOrders.docs.map(item => { return item.data() });
+    console.log(resultado);
+    if (role !== "ADMIN") {
+      let ref = await firebase.firestore().collection('restaurants').where('starredBy','==',session.user.id).get();
+        let result = await ref.docs.map(item => {return item.data()});
+        let restaurantID = result[0].id;
+        
+        setOrders(resultado.filter(item => item.placeID == restaurantID));
+        setOrdersBkp(resultado.filter(item => item.placeID == restaurantID));
+    } else {
+      setOrders(resultado);
+      setOrdersBkp(resultado);
+    }
+    if (bodyres) {
+      if (res.code === 200) {
+        setMessage(mensaje);
+        setTypeMessage('success');
+      } else {
+        setMessage(res.message);
+        setTypeMessage('warning');
+      }
 
-          if(role !== "ADMIN"){
-            setOrders(body.usuarios.filter(item => item.franchiseID == session.user.id));
-            setOrdersBkp(body.usuarios.filter(item => item.franchiseID == session.user.id));
-          }else {
-            setOrders(body.usuarios);
-            setOrdersBkp(body.usuarios);
-          }
+      setLoading(false);
+      setOpen(true);
+    }
+    setLoading(false);
 
-          
-          //console.log(body.usuarios);
-         
-        if(bodyres){
-          if(res.code === 200){
-            setMessage(mensaje);
-            setTypeMessage('success');
-          }else{
-            setMessage(res.message);
-            setTypeMessage('warning');
-          }
-          
-          setLoading(false);
-          setOpen(true);
-        }
-        setLoading(false);
+    // fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdmin', {
+    //   method: 'get',
+    //   mode: 'cors',
+    // }).then(function (respuesta) {
+    //   respuesta.json().then(body => {
 
-        });
-      }).catch(function (err) {
-        // Error :(
-      });
-      console.log("Actualizado");
+    //     if (role !== "ADMIN") {
+    //       setOrders(body.usuarios.filter(item => item.franchiseID == session.user.id));
+    //       setOrdersBkp(body.usuarios.filter(item => item.franchiseID == session.user.id));
+    //     } else {
+    //       setOrders(body.usuarios);
+    //       setOrdersBkp(body.usuarios);
+    //     }
+    //     //console.log(body.usuarios);
+    //     if (bodyres) {
+    //       if (res.code === 200) {
+    //         setMessage(mensaje);
+    //         setTypeMessage('success');
+    //       } else {
+    //         setMessage(res.message);
+    //         setTypeMessage('warning');
+    //       }
+
+    //       setLoading(false);
+    //       setOpen(true);
+    //     }
+    //     setLoading(false);
+
+    //   });
+    // }).catch(function (err) {
+    //   // Error :(
+    // });
+    console.log("Actualizado");
   }
 
   const handleFilter = () => { };
-  
-  const handleSearch = () => { 
-    let name = "";
-    let email = "";
-    let phone = "";
-    let dni = "";
+
+  const handleSearch = () => {
+    let userName = "";
+    let driverName = "";
+    let placeName = "";
+    let orderID = "";
+    let status = "";
     let finded = [];
-    
-    if(search === "" || search == undefined){
+
+    if (search === "" || search == undefined) {
       actualizar();
       finded = [];
       setOrders(ordersBkp);
       setOrdersBkp(ordersBkp);
-    
-    }else{ 
-    
-    let words = ordersBkp.filter((item) => {
-     if(item.hasOwnProperty('name')== true){
-      if(item.name!=undefined){
-        if(item.name.toUpperCase().includes(search.toUpperCase())==true){
-          //finded.push(item);
-          name = 1;
-        }else{
-          name = 0;
+
+    } else {
+
+      let words = ordersBkp.filter((item) => {
+        if (item.hasOwnProperty('userName') == true) {
+          if (item.userName != undefined) {
+            if (item.userName.toUpperCase().includes(search.toUpperCase()) == true) {
+              //finded.push(item);
+              userName = 1;
+            } else {
+              userName = 0;
+            }
+          }
         }
-       } 
-     }
 
-     if(item.hasOwnProperty('email')== true){
-      if(item.email!=undefined){
-        if(item.email.toUpperCase().includes(search.toUpperCase())==true){
-          //finded.push(item);
-          email = 1;
-        }else{
-          email = 0;
+        if (item.hasOwnProperty('driverName') == true) {
+          if (item.driverName != undefined) {
+            if (item.driverName.toUpperCase().includes(search.toUpperCase()) == true) {
+              //finded.push(item);
+              driverName = 1;
+            } else {
+              driverName = 0;
+            }
+          }
         }
-       } 
-     }
 
-     if(item.hasOwnProperty('phone')== true){
-      if(item.phone!=undefined){
-        if(item.phone.toUpperCase().includes(search.toUpperCase())==true){
-          //finded.push(item);
-          phone = 1;
-        }else{
-          phone = 0;
+        if (item.hasOwnProperty('placeName') == true) {
+          if (item.placeName != undefined) {
+            if (item.placeName.toUpperCase().includes(search.toUpperCase()) == true) {
+              //finded.push(item);
+              placeName = 1;
+            } else {
+              placeName = 0;
+            }
+          }
         }
-       } 
-     }
 
-     if(item.hasOwnProperty('dni')== true){
-      if(item.dni!=undefined){
-        if(item.dni.toUpperCase().includes(search.toUpperCase())==true){
-          //finded.push(item);
-          dni = 1;
-        }else{
-          dni = 0;
+        if (item.hasOwnProperty('id') == true) {
+          if (item.id != undefined) {
+            if (item.id.includes(search) == true) {
+              //finded.push(item);
+              orderID = 1;
+            } else {
+              orderID = 0;
+            }
+          }
         }
-       } 
-     }
 
-     if(name === 1 || email === 1 || phone === 1){
-       finded.push(item);
-     }
+        // if (item.hasOwnProperty('status') == true) {
+        //   if (item.status != undefined) {
+        //     if (item.status.toUpperCase().includes(search.toUpperCase()) == true) {
+        //       //finded.push(item);
+        //       status = 1;
+        //     } else {
+        //       status = 0;
+        //     }
+        //   }
+        // }
 
-    });
-  
-    setOrders(finded);
-  }
+        if (userName === 1 || driverName === 1 || placeName === 1 || orderID === 1) {
+          finded.push(item);
+        }
+
+      });
+
+      setOrders(finded);
+    }
   };
 
   return (
@@ -273,15 +327,15 @@ console.log(data);
         <Alert onClose={handleClose} severity={typeMessage}>
           {message}
         </Alert>
-        </Snackbar>
-      <Header actualizar={actualizar} setLoading={setLoading}/>
+      </Snackbar>
+      <Header actualizar={actualizar} setLoading={setLoading} />
       <SearchBarFilter
         onFilter={handleFilter}
         onSearch={handleSearch}
         handleChangeSearch={handleChangeSearch}
       />
       {loading && (
-      <ColorLinearProgress className={classes.margin} />
+        <ColorLinearProgress className={classes.margin} />
       )}
       {orders && (
         <Results

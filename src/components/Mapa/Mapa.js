@@ -13,26 +13,31 @@ const image = 'https://developers.google.com/maps/documentation/javascript/examp
 const { MarkerClusterer } = require("react-google-maps/lib/components/addons/MarkerClusterer");
 const Mapa = compose(
   withProps({
-    googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyARbD4ypapuQsPuquP2UPaTSNuffK3TdZ0&v=3.exp&libraries=geometry,drawing,places",
+    googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyAasrq37Oc5edRFZ1Am5SW6ay0iffy9Wbo&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `600px` }} />,
+    containerElement: <div style={{ height: `600px`,width:`1450px` }} />,
+    // containerElement: <div style={{ height: `600px`,width:`560px` }} />,
     mapElement: <div style={{ height: `100%` }} />,
   }),
   withScriptjs,
   withGoogleMap,
   lifecycle({
     componentDidMount() {
-      const DirectionsService = new google.maps.DirectionsService();
+      const DirectionsService = new window.google.maps.DirectionsService();
       DirectionsService.route({
-        origin: new google.maps.LatLng(this.props.order.washerLocation._latitude, this.props.order.washerLocation._longitude),
-        destination: new google.maps.LatLng(this.props.order.coordinates._latitude, this.props.order.coordinates._longitude),
-        travelMode: google.maps.TravelMode.DRIVING,
+        origin: new window.google.maps.LatLng(this.props.order.driverLocation._lat, this.props.order.driverLocation._long),
+        destination: new window.google.maps.LatLng(this.props.order.toAddressLocation._lat, this.props.order.toAddressLocation._long),
+        // origin: new window.google.maps.LatLng(latitude1, longitude1),
+        // destination: new window.google.maps.LatLng(latitude2, longitude2),
+        travelMode: window.google.maps.TravelMode.DRIVING,
       }, (result, status) => {
-        if (status === google.maps.DirectionsStatus.OK) {
+        if (status === window.google.maps.DirectionsStatus.OK) {
+          //alert(result);
           this.setState({
             directions: result,
           });
         } else {
+          alert(result);
           console.error(`error fetching directions ${result}`);
         }
       });
@@ -40,10 +45,11 @@ const Mapa = compose(
   })
 )(props =>
   <GoogleMap
-    defaultZoom={5}
-    defaultCenter={new google.maps.LatLng(props.order.coordinates._latitude, props.order.coordinates._longitude)}
+    defaultZoom={17}
+    defaultCenter={new window.google.maps.LatLng(props.order.fromAddressLocation._lat, props.order.fromAddressLocation._long)}
+   //defaultCenter={new window.google.maps.LatLng(0, 0)}
   >
-    {props.directions && <DirectionsRenderer directions={props.directions} />}
+    {props.order.fromAddress && <DirectionsRenderer directions={props.directions} />}
     <MarkerClusterer
       onClick={props.onMarkerClustererClick}
       averageCenter
@@ -53,7 +59,12 @@ const Mapa = compose(
         {/* <Marker
           icon={image}
           key={'marker.photo_id'}
-          position={{ lat: props.order.coordinates._latitude, lng: props.order.coordinates._longitude }}
+          position={{ lat: props.order.toAddressLocation._lat, lng: props.order.toAddressLocation._long }}
+        />
+           <Marker
+          icon={image}
+          key={'marker.photo_id'}
+          position={{ lat: props.order.driverLocation._lat, lng: props.order.driverLocation._long }}
         /> */}
     </MarkerClusterer>
   </GoogleMap>

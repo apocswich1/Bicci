@@ -27,8 +27,16 @@ import firebase from 'utils/firebase';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import Chip from '@material-ui/core/Chip';
+import Paper from '@material-ui/core/Paper';
+import TagFacesIcon from '@material-ui/icons/TagFaces';
 import translate from 'translate';
+import config from 'config';
+import { green } from '@material-ui/core/colors';
+import Radio from '@material-ui/core/Radio';
+import { withStyles } from '@material-ui/core/styles';
 
+const service = config.servicio;
 const t = translate;
 const useStyles = makeStyles(theme => ({
   root: {
@@ -42,6 +50,17 @@ const useStyles = makeStyles(theme => ({
     maxHeight: '100%',
     overflowY: 'auto',
     maxWidth: '100%'
+  },
+  roote: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    listStyle: 'none',
+    padding: theme.spacing(0.5),
+    margin: 0,
+  },
+  chip: {
+    margin: theme.spacing(0.5),
   },
   container: {
     marginTop: theme.spacing(3)
@@ -58,17 +77,33 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const GreenRadio = withStyles({
+  root: {
+    color: green[400],
+    '&$checked': {
+      color: green[600],
+    },
+  },
+  checked: {},
+})((props) => <Radio color="default" {...props} />);
+
 const CouponAdd = props => {
-  const { open, onClose, coupon, actualizar, cboFranchises, setLoading, className, ...rest } = props;
+  const { open, onClose, coupon, actualizar,cboRegion, cboRestaurants, setLoading, className, ...rest } = props;
 
   const classes = useStyles();
 
-  const [franchiseID, setFranchiseID] = useState('');
-  const [franchiseName, setFranchiseName] = useState('');
+  const [restaurantID, setRestaurantID] = useState('');
+  const [restaurantName, setRestaurantName] = useState('');
+  const [modeID, setModeID] = useState('');
+  const [modeName, setModeName] = useState('');
   const [global, setGlobal] = useState(true);
   const [cboVenues, setCboVenues] = useState([]);
+  const [places, setPlaces] = useState([]);
+  const [selectedValue, setSelectedValue] = React.useState('a');
+  const [cboDistrict, setCboDistrict] = React.useState([]);
+  const [cboZones, setCboZones] = React.useState([]);
   const [formState, setFormState] = useState({
-    ...coupon, cboVenues, global
+    ...coupon, cboVenues, global, restaurantID, places, restaurantName,cboDistrict,cboZones
   });
 
   //const [startDate, setStartDate] = useState(moment().subtract(7, 'days'));
@@ -79,8 +114,15 @@ const CouponAdd = props => {
   //const [calendarDate, setCalendarDate] = useState(moment());
   const [calendarDate, setCalendarDate] = useState(moment(new Date()));
 
+  const [chipData, setChipData] = useState([]);
   const [selectedDate, setSelectedDate] = React.useState(moment(new Date()));
-  console.log(selectedDate);
+
+
+  const handleChange = (event) => {
+    console.log(selectedValue);
+    setSelectedValue(event.target.value);
+  };
+
   const handleDateChange = date => {
     setSelectedDate(date);
   };
@@ -124,31 +166,42 @@ const CouponAdd = props => {
     return null;
   }
 
-  const handleChangeFranchise = async event => {
+  const handleChangeRestaurant = async event => {
     event.persist();
-    let venues = [];
-    const venuesRef = await firebase.firestore().collection('franchises').doc(event.target.value)
-    .collection('venues').get();
         setFormState(formState => ({
           ...formState,
-          'franchiseID':event.target.value,
-          'franchiseName':event._targetInst.memoizedProps.children[0][0],
-          'cboVenues': venuesRef.docs.map(d => { return d.data() })
-        }));      
+          'restaurantID':event.target.value,
+          'restaurantName':event._targetInst.memoizedProps.children[0][0],
+          'places': [...places, event.target.value]
+        }));
+    
+        setChipData(
+          chipData => [...chipData,{key: event.target.value, label: event._targetInst.memoizedProps.children[0][0]}]
+          );
+    
+        setPlaces(
+            places => [...places, event.target.value]
+        );
+    
+    
     
   
-    console.log(formState);
   }
-  
-  const handleChangeVenue = event => {
+
+  const handleDelete = (chipToDelete) => () => {
+    setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
+  };
+
+
+  const handleChangeMode = async event => {
     event.persist();
-    
         setFormState(formState => ({
           ...formState,
-          'venueID':event.target.value,
-          'venueName':event._targetInst.memoizedProps.children[0][0],
+          'modeID':event.target.value,
+          'modeName':event._targetInst.memoizedProps.children[0][0]
         }));      
-    console.log(formState);
+    
+  
   }
 
   const validateForm = () => {
@@ -158,12 +211,19 @@ const CouponAdd = props => {
     let venueIDErrorMessage = "";
     let amountErrorMessage = "";
     let amountError = "";
-    let discountErrorMessage = "";
-    let discountError = "";
+    let stockErrorMessage = "";
+    let stockError = "";
+    let timesPerUserErrorMessage = "";
+    let timesPerUserError = "";
     
     if(!formState.code){
       codeError = "Debe introducir un code";
       codeErrorMessage = "Debe introducir un code";
+    }
+
+    if(!formState.timesPerUser){
+      timesPerUserError = "Debe introducir una cantidad de uso";
+      timesPerUserErrorMessage = "Debe introducir una cantidad de uso";
     }
 
     if(!formState.amount){
@@ -179,11 +239,11 @@ const CouponAdd = props => {
     }
 
 
-    if(codeError || amountError || venueIDError){
+    if(codeError || timesPerUserError || amountError || venueIDError){
       setFormState(formState => ({
         ...formState,
-        codeError,amountError,venueIDError,
-        codeErrorMessage,amountErrorMessage, venueIDErrorMessage
+        codeError,amountError,venueIDError,timesPerUserError,
+        codeErrorMessage,amountErrorMessage, venueIDErrorMessage,timesPerUserErrorMessage
       }));
       return false;
     }
@@ -201,9 +261,54 @@ const CouponAdd = props => {
     }));
   };
 
+  const handleChangeRegion = async event => {
+    event.persist();
+    const regionRef = await firebase.firestore().collection('zones').doc(event.target.value)
+    .collection('districts').get();
+
+        setFormState(formState => ({
+          ...formState,
+          'regionID':event.target.value,
+          'regionName':event._targetInst.memoizedProps.children[0][0],
+          'cboDistrict': regionRef.docs.map(d => { return d.data() })
+        }));      
+  }
+
+  const handleChangeDistrict = async event => {
+    event.persist();
+    const districtRef = await firebase.firestore().collection('zones').doc(formState.regionID)
+    .collection('districts').doc(event.target.value).collection('zones').get();
+
+        setFormState(formState => ({
+          ...formState,
+          'districtID':event.target.value,
+          'districtName':event._targetInst.memoizedProps.children[0][0],
+          'cboZones': districtRef.docs.map(d => { return d.data() })
+        }));      
+  }
+
+  const handleChangeZone = async event => {
+    event.persist();
+    
+        setFormState(formState => ({
+          ...formState,
+          'zoneID':event.target.value,
+          'zoneName':event._targetInst.memoizedProps.children[0][0]
+        }));      
+  }
+
+  const handleChangeTicket = async event => {
+    event.persist();
+    
+        setFormState(formState => ({
+          ...formState,
+          'ticketPromedioID':event.target.value,
+          'ticketPromedioName':event._targetInst.memoizedProps.children[0][0]
+        }));      
+  }
+
   const handleSave = (event) => {
     event.preventDefault();
-    console.log(formState);
     let msg = "Coupons creado con exito";
     const isValid = validateForm();
     if(isValid){
@@ -212,33 +317,76 @@ const CouponAdd = props => {
       let fecha = new Date(moment(endDate).format('YYYY-MM-DD').toString()+"T"+moment(selectedDate).add('hours',3).format('HH:mm').toString()+":00Z");
       let params;
       if(!formState.global){
-        params = {
-          "active": formState.active ? formState.active : true,
-          "global": formState.global ? formState.global : false,
-          "code": formState.code,
-          "amount": formState.amount,
-          "expirationDate": fecha,
-          "venueID":formState.venueID,
-          "discount":+formState.discount
+        if(selectedValue === 'a'){
+          params = {
+            "id": formState.id,
+            "active": formState.active ? formState.active : true,
+            "global": formState.global ? formState.global : false,
+            "code": formState.code,
+            "amount": +formState.amount,
+            "expirationDate": fecha,
+            "restaurants": chipData.map((item) => {return item.key}),
+            "stock": +formState.stock,
+            "mode": formState.modeID ? +formState.modeID : +1,
+            "timesPerUser":+formState.timesPerUser,
+            "type":selectedValue
+          }
+        }else if(selectedValue === 'b'){
+          params = {
+            "id": formState.id,
+            "active": formState.active ? formState.active : true,
+            "global": formState.global ? formState.global : false,
+            "code": formState.code,
+            "amount": +formState.amount,
+            "expirationDate": fecha,
+            "restaurants": [],
+            "stock": +formState.stock,
+            "mode": formState.modeID ? +formState.modeID : +1,
+            "regionName": formState.regionName,
+            "regionID": formState.regionID,
+            "districtName": formState.districtName,
+            "districtID": formState.districtID,
+            "zoneName": formState.zoneName,
+            "zoneID": formState.zoneID,
+            "timesPerUser":+formState.timesPerUser,
+            "type":selectedValue
+          }
+        }else{
+          params = {
+            "id": formState.id,
+            "active": formState.active ? formState.active : true,
+            "global": formState.global ? formState.global : false,
+            "code": formState.code,
+            "amount": +formState.amount,
+            "expirationDate": fecha,
+            "restaurants": [],
+            "stock": +formState.stock,
+            "mode": formState.modeID ? +formState.modeID : +1,
+            "ticketPromedioName": formState.ticketPromedioName,
+            "ticketPromedioID": formState.ticketPromedioID,
+            "timesPerUser":+formState.timesPerUser,
+            "type":selectedValue
+          }
         }
       }else{
         params = {
           "active": formState.active ? formState.active : true,
           "global": formState.global ? formState.global : false,
           "code": formState.code,
-          "amount": formState.amount,
-          "expirationDate": fecha
+          "amount": +formState.amount,
+          "expirationDate": fecha,
+          "stock":+formState.stock,
+          "mode":+formState.modeID,
+          "timesPerUser":+formState.timesPerUser
         }
       }
-
-      console.log(params);
-      fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/createCouponsAdmin', {
+console.log(params);
+      fetch(service+'createCouponsAdmin', {
           method: 'post',
           mode: 'cors',
           body: JSON.stringify(params)
         }).then(function (respuesta) {
           respuesta.json().then(body => {
-            console.log(body);
             actualizar(msg,body);
             });
         }).catch(function (err) {
@@ -298,7 +446,7 @@ const CouponAdd = props => {
               >
                 <TextField
                   fullWidth
-                  label={t("amount")}
+                  label={formState.modeID == 2 ? t("Porcentaje") : t("Valor")}
                   name="amount"
                   onChange={handleFieldChange}
                   value={formState.amount}
@@ -385,36 +533,141 @@ const CouponAdd = props => {
                 item
                 md={6}
                 xs={12}
-                hidden={formState.global ? true : false }
               >
                 <TextField
                   fullWidth
-                  label={t("discount")}
-                  name="discount"
+                  label={t("stock")}
+                  name="stock"
                   onChange={handleFieldChange}
-                  value={formState.discount}
+                  value={formState.stock}
                   variant="outlined"
-                  error={formState.discountError}
-                  helperText={formState.discountErrorMessage}
+                  error={formState.stockError}
+                  helperText={formState.stockErrorMessage}
+                />
+              </Grid>
+              <Grid
+                item
+                md={6}
+                xs={12}
+              >
+                <TextField
+                  fullWidth
+                  label={t("TimesPerUser")}
+                  name="timesPerUser"
+                  onChange={handleFieldChange}
+                  value={formState.timesPerUser}
+                  variant="outlined"
+                  error={formState.timesPerUserError}
+                  helperText={formState.timesPerUserErrorMessage}
                 />
               </Grid>
               <Grid
                 item
                 md={12}
-                xs={12}
-                hidden={formState.global ? true : false }
+                xs={12}                
               >
-                <InputLabel id="demo-simple-select-label">{t("franchise")}</InputLabel>
+                <InputLabel id="demo-simple-select-label">{t("mode")}</InputLabel>
                 <Select
-                  name="franchiseName"
-                  value={formState.franchiseID}
-                  onChange={handleChangeFranchise}
+                  name="modeName"
+                  value={formState.modeID}
+                  onChange={handleChangeMode}
                   style={{ width: "520px" }}
                 >
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  {cboFranchises.map(item => (
+                    <MenuItem value={1}>Monto Fijo</MenuItem>
+                    <MenuItem value={2}>Porcentaje</MenuItem>
+                    <MenuItem value={3}>Envío Gratis</MenuItem>
+                </Select>
+              </Grid>
+              <Grid
+                item
+                md={4}
+                xs={4}
+                hidden={formState.global ? true : false}
+              >
+                <Radio
+        checked={selectedValue === 'a'}
+        onChange={handleChange}
+        value="a"
+        name="radio-button-demo"
+        inputProps={{ 'aria-label': 'A' }}
+      /> Restaurant
+              </Grid>
+              <Grid
+                item
+                md={4}
+                xs={4}
+                hidden={formState.global ? true : false}
+              >
+                <Radio
+        checked={selectedValue === 'b'}
+        onChange={handleChange}
+        value="b"
+        name="radio-button-demo"
+        inputProps={{ 'aria-label': 'B' }}
+      /> Zona
+              </Grid>
+              <Grid
+                item
+                md={4}
+                xs={4}
+                hidden={formState.global ? true : false}
+              >
+                <GreenRadio
+        checked={selectedValue === 'c'}
+        onChange={handleChange}
+        value="c"
+        name="radio-button-demo"
+        inputProps={{ 'aria-label': 'C' }}
+      /> Ticket Promedio
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+                // hidden={formState.global ? true : false}
+                hidden={selectedValue === 'a' && !formState.global ? false : true }
+              >
+                    <Paper component="ul" className={classes.roote}>
+                {chipData.map((data) => {
+                  let icon;
+
+                  if (data.label === 'React') {
+                    icon = <TagFacesIcon />;
+                  }
+
+                  return (
+                    <li key={data.key}>
+                      <Chip
+                        icon={icon}
+                        label={data.label}
+                        onDelete={data.label === 'React' ? undefined : handleDelete(data)}
+                        className={classes.chip}
+                      />
+                    </li>
+                  );
+                })}
+                </Paper>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+                hidden={selectedValue === 'a'  && !formState.global ? false : true }
+              >
+                <InputLabel id="demo-simple-select-label">{t("restaurant")}</InputLabel>
+                <Select
+                  name="restaurantName"
+                  value={formState.restaurantID}
+                  onChange={handleChangeRestaurant}
+                  style={{ width: "520px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {cboRestaurants.map(item => (
                     <MenuItem value={item.id}>{item.name}</MenuItem>
                   ))}
                 </Select>
@@ -423,21 +676,84 @@ const CouponAdd = props => {
                 item
                 md={12}
                 xs={12}
-                hidden={formState.global ? true : false }
+                hidden={selectedValue === 'b'  && !formState.global ? false : true }
               >
-                <InputLabel id="demo-simple-select-label">{t("venue")}</InputLabel>
+                <InputLabel id="demo-simple-select-label">{t("Región")}</InputLabel>
                 <Select
-                  name="venueName"
-                  value={formState.venueID}
-                  onChange={handleChangeVenue}
+                  name="regionName"
+                  value={formState.regionID}
+                  onChange={handleChangeRegion}
                   style={{ width: "520px" }}
                 >
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  {formState.cboVenues.map((item,i) => (
+                  {cboRegion.map(item => (
                     <MenuItem value={item.id}>{item.name}</MenuItem>
                   ))}
+                </Select>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+                hidden={selectedValue === 'b'  && !formState.global ? false : true }
+              >
+                <InputLabel id="demo-simple-select-label">{t("Districts")}</InputLabel>
+                <Select
+                  name="districtName"
+                  value={formState.districtID}
+                  onChange={handleChangeDistrict}
+                  style={{ width: "520px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {formState.cboDistrict.map(item => (
+                    <MenuItem value={item.id}>{item.name}</MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+                hidden={selectedValue === 'b'  && !formState.global ? false : true }
+              >
+                <InputLabel id="demo-simple-select-label">{t("Zones")}</InputLabel>
+                <Select
+                  name="zoneName"
+                  value={formState.zoneID}
+                  onChange={handleChangeZone}
+                  style={{ width: "520px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {formState.cboZones.map(item => (
+                    <MenuItem value={item.id}>{item.zone}</MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}  
+                hidden={selectedValue === 'c'  && !formState.global ? false : true }              
+              >
+                <InputLabel id="demo-simple-select-label">{t("Ticket promedio")}</InputLabel>
+                <Select
+                  name="ticketPromedioName"
+                  value={formState.ticketPromedioID}
+                  onChange={handleChangeTicket}
+                  style={{ width: "520px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                    <MenuItem value={1}>Menor a 10.000</MenuItem>
+                    <MenuItem value={2}>Entre 10.001 y 20.000</MenuItem>
+                    <MenuItem value={3}>Mayor a 20.000</MenuItem>
                 </Select>
               </Grid>
             </Grid>

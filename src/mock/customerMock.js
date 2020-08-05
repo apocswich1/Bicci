@@ -323,3 +323,7 @@ mock.onGet('/api/management/customers/1/logs').reply(200, {
     }
   ]
 });
+
+mock.onPost('/api/management/customers/1/feedback').reply(200, {
+  request: "data" 
+});

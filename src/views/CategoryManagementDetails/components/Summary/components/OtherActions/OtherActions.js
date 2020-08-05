@@ -120,10 +120,10 @@ const OtherActions = props => {
             {t("Enable")} {t("Category")}
           </Button>
           )}
-          <Button>
+          {/* <Button>
             <GetAppIcon className={classes.buttonIcon} />
             {t("Export client data")}
-          </Button>
+          </Button> */}
         </div>
         <Typography
           className={classes.notice}

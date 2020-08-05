@@ -9,7 +9,9 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import firebase from 'utils/firebase';
 import { useSelector } from 'react-redux';
 import AuthGuard from '../../components/AuthGuard/AuthGuard';
+import config from 'config';
 
+const service = config.servicio;
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3)
@@ -24,9 +26,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const ProductManagementList = () => {
+const ProductManagementList = (props) => {
   const classes = useStyles();
-
+  const { id } = props;
   const [products, setProducts] = useState([]);
   const [productsBkp, setProductsBkp] = useState([]);
   const [search, setSearch] = useState('');
@@ -37,6 +39,8 @@ const ProductManagementList = () => {
   const [horizontal, setHorizontal] = React.useState('center');
   const [typeMessage, setTypeMessage] = React.useState('');
   const [cboCategories, setCboCategories] = React.useState([]);
+  const [cboRestaurants, setCboRestaurants] = React.useState([]);
+  const [cboIngredients, setCboIngredients] = React.useState([]);
 
 
   const session = useSelector(state => state.session);
@@ -67,53 +71,53 @@ const ProductManagementList = () => {
   const handleChangeSearch = event => {
     setSearch(event.target.value);
   }
-  
+
   function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
   }
-  
-  const sortAsc = (array, label)=> {
+
+  const sortAsc = (array, label) => {
     const data = array.sort(function (a, b) {
-      
+
       if (b[label] === "") {
         return 0;
       }
       if (b[label] > a[label]) {
-          return -1;
+        return -1;
       }
       if (a[label] > b[label]) {
-          return 1;
+        return 1;
       }
       return 0;
-  });
+    });
 
-  console.log(data);
-  
-  setProducts(data);
-  setSearch([]);
-  return;
-}
+    console.log(data);
 
-const sortDesc = (array,label)=> {
-  const data = array.sort(function (a, b) {
-    if (a[label] === "") {
-      return 0;
-    }
-    if (a[label] > b[label]) {
+    setProducts(data);
+    setSearch([]);
+    return;
+  }
+
+  const sortDesc = (array, label) => {
+    const data = array.sort(function (a, b) {
+      if (a[label] === "") {
+        return 0;
+      }
+      if (a[label] > b[label]) {
         return -1;
-    }
-    if (b[label] > a[label]) {
+      }
+      if (b[label] > a[label]) {
         return 1;
-    }
-    return 0;
-});
+      }
+      return 0;
+    });
 
-console.log(data);
+    console.log(data);
 
-  setProducts(data);
-  setSearch([]);
-  return;
-}
+    setProducts(data);
+    setSearch([]);
+    return;
+  }
 
 
 
@@ -125,31 +129,125 @@ console.log(data);
 
     const fetchCboCategories = async () => {
       let categories = [];
-      const cboCategoriesRef = firebase.firestore().collection("categories").orderBy('name');
+      let cboCategoriesRef = "";
+      if (id) {
+        cboCategoriesRef = firebase.firestore().collection("restaurants")
+          .doc(id).collection('foodCategories').orderBy('name');
+          cboCategoriesRef.get().then((snapshot) => {
+            snapshot.forEach(function (doc) {
+              categories.push(doc.data());
+            });
+            console.log(categories);
+            setCboCategories(categories);
+    
+          }).catch((error) => {
+            console.log("Error getting documents");
+          });
+      } else {
+        cboCategoriesRef = firebase.firestore().collection("restaurants")
+          .orderBy('name');
+          // cboCategoriesRef.get().then((snapshot) => {
+          //   snapshot.forEach(function (doc) {
+          //     categories.push(doc.data());
+          //   });
+            console.log(categories);
+            setCboCategories(categories);
+    
+          // }).catch((error) => {
+          //   console.log("Error getting documents");
+          // });
+      }
 
-      cboCategoriesRef.get().then((snapshot) => {
-        snapshot.forEach(function (doc) {
-          categories.push(doc.data());
-        });
-        
-          setCboCategories(categories);
-        
-      }).catch((error) => {
-        console.log("Error getting documents");
-      });
     }
 
+    const fetchCboRestaurants = async () => {
+      let restaurants = [];
+      let cboRestaurantsRef = "";
+      if (id) {
+        cboRestaurantsRef = firebase.firestore().collection("restaurants")
+          .doc(id);
+
+          cboRestaurantsRef.get().then((snapshot) => {
+            //snapshot.forEach(function (doc) {
+              restaurants.push(snapshot.data());
+            //});
+            console.log(restaurants);
+            setCboRestaurants(restaurants);
+    
+          }).catch((error) => {
+            console.log("Error getting documents");
+          });
+      } else {
+        cboRestaurantsRef = firebase.firestore().collection("restaurants")
+          .orderBy('name');
+
+          cboRestaurantsRef.get().then((snapshot) => {
+            snapshot.forEach(function (doc) {
+              restaurants.push(doc.data());
+            });
+            console.log(restaurants);
+            setCboRestaurants(restaurants);
+    
+          }).catch((error) => {
+            console.log("Error getting documents");
+          });
+      }
+
+    }
+
+    const fetchCboIngredients = async () => {
+      let ingredients = [];
+      try {
+        if (id !== "") {
+          const cboIngredientsRef = await firebase.firestore().collection("ingredients")
+          .where('restaurantID','==',id).orderBy('name').get();
+          const datos = await cboIngredientsRef.docs.map(item => {return item.data()});
+          console.log(datos);
+          setCboIngredients(datos);
+  
+        }else{
+          const cboIngredientsRef = await firebase.firestore().collection("ingredients")
+          .orderBy('name');
+          const datos = await cboIngredientsRef.docs.map(item => {return item.data()});
+          setCboIngredients(datos);
+        }  
+      } catch (error) {
+       console.log(error); 
+      }
+      
+      // const cboIngredientsRef = firebase.firestore().collection("ingredients").orderBy('name');
+      // cboIngredientsRef.get().then((snapshot) => {
+      //   snapshot.forEach(function (doc) {
+      //     ingredients.push(doc.data());
+      //   });
+
+      //   setCboIngredients(ingredients);
+
+      // }).catch((error) => {
+      //   console.log("Error getting documents");
+      // });
+    }
+
+    fetchCboRestaurants();
+    fetchCboIngredients();
     fetchCboCategories();
 
     const fetchProducts = () => {
-      fetch('https://us-central1-deutschpharma-5edbb.cloudfunctions.net/listProductsAdmin', {
+      fetch(service + 'listProductsAdmin', {
         method: 'get',
         mode: 'cors',
       }).then(function (respuesta) {
         respuesta.json().then(body => {
-          setProducts(body.usuarios.filter(item => item.deleted !== true));
-          setProductsBkp(body.usuarios.filter(item => item.deleted !== true));
-          console.log(body.usuarios.filter(item => item.deleted !== true));
+          if (id) {
+            setProducts(body.usuarios.filter(item => item.deleted !== true && item.restaurantID == id));
+            setProductsBkp(body.usuarios.filter(item => item.deleted !== true && item.restaurantID == id));
+            console.log(body.usuarios.filter(item => item.deleted !== true && item.restaurantID == id));
+          } else {
+            setProducts(body.usuarios.filter(item => item.deleted !== true));
+            setProductsBkp(body.usuarios.filter(item => item.deleted !== true));
+            console.log(body.usuarios.filter(item => item.deleted !== true));
+          }
+
           setLoading(false);
         });
       }).catch(function (err) {
@@ -165,100 +263,106 @@ console.log(data);
   }, []);
 
 
-  const actualizar = (msg,bodyres)=>{
+  const actualizar = (msg, bodyres) => {
     const mensaje = msg;
     const res = bodyres;
 
     console.log("Actualizando...");
     setLoading(true);
-      fetch('https://us-central1-deutschpharma-5edbb.cloudfunctions.net/listProductsAdmin', {
-        method: 'get',
-        mode: 'cors',
-      }).then(function (respuesta) {
-        respuesta.json().then(body => {
+    fetch(service + 'listProductsAdmin', {
+      method: 'get',
+      mode: 'cors',
+    }).then(function (respuesta) {
+      respuesta.json().then(body => {
+        if (id) {
+          setProducts(body.usuarios.filter(item => item.deleted !== true && item.restaurantID == id));
+          setProductsBkp(body.usuarios.filter(item => item.deleted !== true && item.restaurantID == id));
+          console.log(body.usuarios.filter(item => item.deleted !== true && item.restaurantID == id));
+        } else {
           setProducts(body.usuarios.filter(item => item.deleted !== true));
           setProductsBkp(body.usuarios.filter(item => item.deleted !== true));
           console.log(body.usuarios.filter(item => item.deleted !== true));
-         
-        if(bodyres){
-          if(res.code === 200){
+        }
+
+        if (bodyres) {
+          if (res.code === 200) {
             setMessage(mensaje);
             setTypeMessage('success');
-          }else{
+          } else {
             setMessage(res.message);
             setTypeMessage('warning');
           }
-          
+
           setLoading(false);
           setOpen(true);
         }
         setLoading(false);
 
-        });
-      }).catch(function (err) {
-        // Error :(
       });
-      console.log("Actualizado");
+    }).catch(function (err) {
+      // Error :(
+    });
+    console.log("Actualizado");
   }
 
   const handleFilter = () => { };
-  
-  const handleSearch = () => { 
+
+  const handleSearch = () => {
     let name = "";
     let email = "";
     let phone = "";
     let finded = [];
-    
-    if(search === "" || search == undefined){
+
+    if (search === "" || search == undefined) {
       actualizar();
       finded = [];
       setProducts(productsBkp);
       setProductsBkp(productsBkp);
-    
-    }else{ 
-    
-    let words = productsBkp.filter((item) => {
-     if(item.hasOwnProperty('name')== true){
-      if(item.name!=undefined){
-        if(item.name.toUpperCase().includes(search.toUpperCase())==true){
-          //finded.push(item);
-          name = 1;
-        }else{
-          name = 0;
+
+    } else {
+
+      let words = productsBkp.filter((item) => {
+        if (item.hasOwnProperty('name') == true) {
+          if (item.name != undefined) {
+            if (item.name.toUpperCase().includes(search.toUpperCase()) == true) {
+              //finded.push(item);
+              name = 1;
+            } else {
+              name = 0;
+            }
+          }
         }
-       } 
-     }
 
-     if(item.hasOwnProperty('email')== true){
-      if(item.email!=undefined){
-        if(item.email.toUpperCase().includes(search.toUpperCase())==true){
-          //finded.push(item);
-          email = 1;
-        }else{
-          email = 0;
+        if (item.hasOwnProperty('email') == true) {
+          if (item.email != undefined) {
+            if (item.email.toUpperCase().includes(search.toUpperCase()) == true) {
+              //finded.push(item);
+              email = 1;
+            } else {
+              email = 0;
+            }
+          }
         }
-       } 
-     }
 
-     if(item.hasOwnProperty('phone')== true){
-      if(item.phone!=undefined){
-        if(item.phone.toUpperCase().includes(search.toUpperCase())==true){
-          //finded.push(item);
-          phone = 1;
-        }else{
-          phone = 0;
+        if (item.hasOwnProperty('phone') == true) {
+          if (item.phone != undefined) {
+            if (item.phone.toUpperCase().includes(search.toUpperCase()) == true) {
+              //finded.push(item);
+              phone = 1;
+            } else {
+              phone = 0;
+            }
+          }
         }
-       } 
-     }
 
-     if(name === 1 || email === 1 || phone === 1){
-       finded.push(item);
-     }
+        if (name === 1 || email === 1 || phone === 1) {
+          finded.push(item);
+        }
 
-    });
-  
-    setProducts(finded);
-  }
+      });
+
+      setProducts(finded);
+    }
   };
 
   return (
@@ -276,15 +380,22 @@ console.log(data);
         <Alert onClose={handleClose} severity={typeMessage}>
           {message}
         </Alert>
-        </Snackbar>
-      <Header actualizar={actualizar} setLoading={setLoading} cboCategories={cboCategories}/>
+      </Snackbar>
+      <Header
+        actualizar={actualizar}
+        setLoading={setLoading}
+        cboCategories={cboCategories}
+        cboRestaurants={cboRestaurants}
+        cboIngredients={cboIngredients}
+        restaurantID={id}
+      />
       <SearchBar
         onFilter={handleFilter}
         onSearch={handleSearch}
         handleChangeSearch={handleChangeSearch}
       />
       {loading && (
-      <ColorLinearProgress className={classes.margin} />
+        <ColorLinearProgress className={classes.margin} />
       )}
       {products && (
         <Results
@@ -293,6 +404,7 @@ console.log(data);
           actualizar={actualizar}
           sortAsc={sortAsc}
           sortDesc={sortDesc}
+          restaurantID={id}
         />
       )}
     </Page>

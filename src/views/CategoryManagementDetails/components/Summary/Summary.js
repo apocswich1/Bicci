@@ -5,7 +5,7 @@ import { makeStyles, withStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 import firebase from 'utils/firebase';
 import axios from 'utils/axios';
-import { CategoryInfo, Invoices, SendEmails, OtherActions } from './components';
+import { CategoryInfo, Invoices, SendEmails, Avatar, OtherActions } from './components';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -144,6 +144,23 @@ const Summary = props => {
       <ColorLinearProgress className={classes.margin} />
       )}
         <CategoryInfo category={category} actualizar={actualizar}/>
+      </Grid>
+      <Grid
+        item
+        lg={4}
+        md={4}
+        xl={4}
+        xs={12}
+      >
+        <Grid
+        item
+        lg={12}
+        md={12}
+        xl={12}
+        xs={12}
+      >
+        <Avatar driver={category} actualizar={actualizar}/>
+      </Grid>
       </Grid>
       {/*<Grid
         item

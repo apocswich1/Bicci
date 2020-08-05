@@ -6,11 +6,12 @@ import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import { Drawer, Divider, Paper, Avatar, Typography } from '@material-ui/core';
 import { Hidden } from '@material-ui/core';
-
 import useRouter from 'utils/useRouter';
 import { Navigation } from 'components';
 import navigationConfig from './navigationConfig';
-import navigationConfigFranchise from './navigationConfigFranchise';
+import navigationConfigPlace from './navigationConfigPlace';
+import NavBarVertical from './NavBarVertical';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,6 +48,8 @@ const NavBar = props => {
   const classes = useStyles();
   const router = useRouter();
   const session = useSelector(state => state.session);
+
+  
 
   useEffect(() => {
     if (openMobile) {
@@ -86,8 +89,8 @@ const NavBar = props => {
             />
           ))
         )}
-        {session.user.role=="FRANCHISE" && (
-          navigationConfigFranchise.map(list => (
+        {session.user.role=="Administrator" && (
+          navigationConfigPlace.map(list => (
             <Navigation
               component="div"
               key={list.title}
@@ -124,7 +127,12 @@ const NavBar = props => {
           elevation={1}
           square
         >
-          {navbarContent}
+           {/* <NavBarVertical icono={1} titulo="Nuevos Pedidos" link={`/dashboards/nuevos`}/>
+           <NavBarVertical icono={2} titulo="En Cocina" link={`/dashboards/encocina`}/>
+           <NavBarVertical icono={3} titulo="Entrega" link={`/dashboards/entrega`}/>
+           <NavBarVertical icono={4} titulo="Historial" link={`/dashboards/historial`}/>
+           <NavBarVertical icono={5} titulo="Productos" link={`/dashboards/productos`}/> */}
+           {navbarContent}
         </Paper>
       </Hidden>
     </Fragment>

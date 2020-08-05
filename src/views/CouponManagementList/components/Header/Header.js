@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Header = props => {
-  const { className, actualizar,setLoading,cboFranchises, ...rest } = props;
+  const { className, actualizar,cboRegion, setLoading,cboRestaurants, ...rest } = props;
 
   const [openEdit, setOpenEdit] = useState(false);
 
@@ -66,11 +66,12 @@ const Header = props => {
       </Grid>
       <CouponAdd
        // coupon={coupon}
+       cboRegion={cboRegion}
         onClose={handleEditClose}
         open={openEdit}
         actualizar={actualizar}
         setLoading={setLoading}
-        cboFranchises={cboFranchises}
+        cboRestaurants={cboRestaurants}
         />
     </div>
   );

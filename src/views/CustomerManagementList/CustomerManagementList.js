@@ -9,6 +9,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import firebase from 'utils/firebase';
 import { useSelector } from 'react-redux';
 import AuthGuard from '../../../src/components/AuthGuard/AuthGuard';
+import useRouter from 'utils/useRouter';
 import config from 'config';
 
 const useStyles = makeStyles(theme => ({
@@ -37,11 +38,15 @@ const CustomerManagementList = () => {
   const [vertical, setVertical] = React.useState('top');
   const [horizontal, setHorizontal] = React.useState('center');
   const [typeMessage, setTypeMessage] = React.useState('');
-
+  const router = useRouter();
 
   const session = useSelector(state => state.session);
-  console.log(session);
+  //console.log(session);
   AuthGuard(session);
+
+  if (session.user.role=="Administrator") {
+    router.history.push('/overview');
+  }
 
   const ColorLinearProgress = withStyles({
     colorPrimary: {
@@ -87,7 +92,7 @@ const CustomerManagementList = () => {
       return 0;
   });
 
-  console.log(data);
+  //console.log(data);
   
   setCustomers(data);
   setSearch([]);
@@ -108,7 +113,7 @@ const sortDesc = (array,label)=> {
     return 0;
 });
 
-console.log(data);
+//console.log(data);
 
   setCustomers(data);
   setSearch([]);
@@ -128,9 +133,9 @@ console.log(data);
         mode: 'cors',
       }).then(function (respuesta) {
         respuesta.json().then(body => {
-          setCustomers(body.usuarios.filter(item => item.deleted !== true));
-          setCustomersBkp(body.usuarios.filter(item => item.deleted !== true));
-          console.log(body.usuarios.filter(item => item.deleted !== true));
+          setCustomers(body.usuarios.filter(item => item.deleted !== true && item.role !== "ADMIN"));
+          setCustomersBkp(body.usuarios.filter(item => item.deleted !== true && item.role !== "ADMIN"));
+         // console.log(body.usuarios.filter(item => item.deleted !== true));
           setLoading(false);
         });
       }).catch(function (err) {
@@ -157,9 +162,9 @@ console.log(data);
         mode: 'cors',
       }).then(function (respuesta) {
         respuesta.json().then(body => {
-          setCustomers(body.usuarios.filter(item => item.deleted !== true));
-          setCustomersBkp(body.usuarios.filter(item => item.deleted !== true));
-          console.log(body.usuarios.filter(item => item.deleted !== true));
+          setCustomers(body.usuarios.filter(item => item.deleted !== true && item.role !== "ADMIN"));
+          setCustomersBkp(body.usuarios.filter(item => item.deleted !== true && item.role !== "ADMIN"));
+        //  console.log(body.usuarios.filter(item => item.deleted !== true));
          
         if(bodyres){
           if(res.code === 200){

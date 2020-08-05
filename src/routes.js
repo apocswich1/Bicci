@@ -2,11 +2,16 @@
 /* eslint-disable react/display-name */
 import React, { lazy } from 'react';
 import { Redirect } from 'react-router-dom';
-
 import AuthLayout from './layouts/Auth';
 import ErrorLayout from './layouts/Error';
 import DashboardLayout from './layouts/Dashboard';
 import DashboardAnalyticsView from './views/DashboardAnalytics';
+import DashboardKitchensView from './views/DashboardKitchen';
+import KitchenNuevosPedidos from './views/KitchenNuevosPedidos';
+import KitchenEnCocina from './views/KitchenEnCocina';
+import KitchenEntrega from './views/KitchenEntrega';
+import KitchenHistorial from './views/KitchenHistorial';
+import KitchenProductos from './views/KitchenProductos';
 import DashboardDefaultView from './views/DashboardDefault';
 import OverviewView from './views/Overview';
 import PresentationView from './views/Presentation';
@@ -15,7 +20,8 @@ const routes = [
   {
     path: '/',
     exact: true,
-    component: () => <Redirect to="/dashboards/default" />
+    component: () => <Redirect to="/overview" />
+    // component: () => <Redirect to="/dashboards/nuevos" />
   },
   {
     path: '/auth',
@@ -84,16 +90,51 @@ const routes = [
         exact: true,
         component: lazy(() => import('views/Chat'))
       },
+      // {
+      //   path: '/dashboards/analytics',
+      //   exact: true,
+      //   component: DashboardAnalyticsView
+      // },
       {
-        path: '/dashboards/analytics',
+        path: '/dashboards/kitchen',
         exact: true,
-        component: DashboardAnalyticsView
+        component: DashboardKitchensView
+      },
+      {
+        path: '/dashboards/nuevos',
+        exact: true,
+        component: KitchenNuevosPedidos
+      },
+      {
+        path: '/dashboards/encocina',
+        exact: true,
+        component: KitchenEnCocina
+      },
+      {
+        path: '/dashboards/entrega',
+        exact: true,
+        component: KitchenEntrega
+      },
+      {
+        path: '/dashboards/historial',
+        exact: true,
+        component: KitchenHistorial
+      },
+      {
+        path: '/dashboards/productos',
+        exact: true,
+        component: KitchenProductos
       },
       {
         path: '/dashboards/default',
         exact: true,
-       // component: DashboardDefaultView
-       component: lazy(() => import('views/CustomerManagementList'))
+        // component: DashboardDefaultView
+        component: lazy(() => import('views/CustomerManagementList'))
+      },
+      {
+        path: '/dashboards/default2',
+        exact: true,
+        component: DashboardDefaultView
       },
       {
         path: '/invoices/:id',
@@ -141,6 +182,36 @@ const routes = [
         component: lazy(() => import('views/DriverManagementDetails'))
       },
       {
+        path: '/management/restaurants',
+        exact: true,
+        component: lazy(() => import('views/RestaurantManagementList'))
+      },
+      {
+        path: '/management/restaurants/:id',
+        exact: true,
+        component: lazy(() => import('views/RestaurantManagementDetails'))
+      },
+      {
+        path: '/management/restaurants/:id/:tab',
+        exact: true,
+        component: lazy(() => import('views/RestaurantManagementDetails'))
+      },
+      {
+        path: '/management/administrators',
+        exact: true,
+        component: lazy(() => import('views/AdministratorManagementList'))
+      },
+      {
+        path: '/management/administrators/:id',
+        exact: true,
+        component: lazy(() => import('views/AdministratorManagementDetails'))
+      },
+      {
+        path: '/management/administrators/:id/:tab',
+        exact: true,
+        component: lazy(() => import('views/AdministratorManagementDetails'))
+      },
+      {
         path: '/management/categories',
         exact: true,
         component: lazy(() => import('views/CategoryManagementList'))
@@ -156,19 +227,49 @@ const routes = [
         component: lazy(() => import('views/CategoryManagementDetails'))
       },
       {
-        path: '/management/substances',
+        path: '/management/kinds',
         exact: true,
-        component: lazy(() => import('views/SubstanceManagementList'))
+        component: lazy(() => import('views/KindManagementList'))
       },
       {
-        path: '/management/substances/:id',
+        path: '/management/kinds/:id/:idrestaurant',
         exact: true,
-        component: lazy(() => import('views/SubstanceManagementDetails'))
+        component: lazy(() => import('views/KindManagementDetails'))
       },
       {
-        path: '/management/substances/:id/:tab',
+        path: '/management/kinds/:id/:idrestaurant/:tab',
         exact: true,
-        component: lazy(() => import('views/SubstanceManagementDetails'))
+        component: lazy(() => import('views/KindManagementDetails'))
+      },
+      {
+        path: '/management/ingredients',
+        exact: true,
+        component: lazy(() => import('views/IngredientManagementList'))
+      },
+      {
+        path: '/management/ingredients/:id',
+        exact: true,
+        component: lazy(() => import('views/IngredientManagementDetails'))
+      },
+      {
+        path: '/management/ingredients/:id/:tab',
+        exact: true,
+        component: lazy(() => import('views/IngredientManagementDetails'))
+      },
+      {
+        path: '/management/companies',
+        exact: true,
+        component: lazy(() => import('views/CompanyManagementList'))
+      },
+      {
+        path: '/management/companies/:id',
+        exact: true,
+        component: lazy(() => import('views/CompanyManagementDetails'))
+      },
+      {
+        path: '/management/companies/:id/:tab',
+        exact: true,
+        component: lazy(() => import('views/CompanyManagementDetails'))
       },
       {
         path: '/management/products',
@@ -176,14 +277,29 @@ const routes = [
         component: lazy(() => import('views/ProductManagementList'))
       },
       {
-        path: '/management/products/:id',
+        path: '/management/products/:id/:idrestaurant',
         exact: true,
         component: lazy(() => import('views/ProductManagementDetails'))
       },
       {
-        path: '/management/products/:id/:tab',
+        path: '/management/products/:id/:idrestaurant/:tab',
         exact: true,
         component: lazy(() => import('views/ProductManagementDetails'))
+      },
+      {
+        path: '/management/kitchens',
+        exact: true,
+        component: lazy(() => import('views/KitchenManagementList'))
+      },
+      {
+        path: '/management/kitchens/:id/:idrestaurant',
+        exact: true,
+        component: lazy(() => import('views/KitchenManagementDetails'))
+      },
+      {
+        path: '/management/kitchens/:id/:idrestaurant/:tab',
+        exact: true,
+        component: lazy(() => import('views/KitchenManagementDetails'))
       },
       {
         path: '/management/documents',
@@ -201,49 +317,34 @@ const routes = [
         component: lazy(() => import('views/DocumentManagementDetails'))
       },
       {
-        path: '/management/washers',
+        path: '/management/employees',
         exact: true,
-        component: lazy(() => import('views/WasherManagementList'))
+        component: lazy(() => import('views/EmployeeManagementList'))
       },
       {
-        path: '/management/washers/:id',
+        path: '/management/employees/:id',
         exact: true,
-        component: lazy(() => import('views/WasherManagementDetails'))
+        component: lazy(() => import('views/EmployeeManagementDetails'))
       },
       {
-        path: '/management/washers/:id/:tab',
+        path: '/management/employees/:id/:tab',
         exact: true,
-        component: lazy(() => import('views/WasherManagementDetails'))
+        component: lazy(() => import('views/EmployeeManagementDetails'))
       },
       {
-        path: '/management/washersvenue',
+        path: '/management/centers',
         exact: true,
-        component: lazy(() => import('views/WasherVenueManagementList'))
+        component: lazy(() => import('views/CenterManagementList'))
       },
       {
-        path: '/management/washersvenue/:id',
+        path: '/management/centers/:id',
         exact: true,
-        component: lazy(() => import('views/WasherVenueManagementDetails'))
+        component: lazy(() => import('views/CenterManagementDetails'))
       },
       {
-        path: '/management/washersvenue/:id/:tab',
+        path: '/management/centers/:id/:tab',
         exact: true,
-        component: lazy(() => import('views/WasherVenueManagementDetails'))
-      },
-      {
-        path: '/management/franchises',
-        exact: true,
-        component: lazy(() => import('views/FranchiseManagementList'))
-      },
-      {
-        path: '/management/franchises/:id',
-        exact: true,
-        component: lazy(() => import('views/FranchiseManagementDetails'))
-      },
-      {
-        path: '/management/franchises/:id/:tab',
-        exact: true,
-        component: lazy(() => import('views/FranchiseManagementDetails'))
+        component: lazy(() => import('views/CenterManagementDetails'))
       },
       {
         path: '/management/services',
@@ -422,15 +523,45 @@ const routes = [
         component: lazy(() => import('views/ProjectCreate'))
       },
       {
-        path: '/projects/:id',
+        path: '/management/claims',
         exact: true,
-        component: lazy(() => import('views/FranchiseDetails'))
+        component: lazy(() => import('views/ClaimManagementList'))
       },
       {
-        path: '/projects/:id/:tab',
+        path: '/management/claims/:id',
         exact: true,
-        component: lazy(() => import('views/FranchiseDetails'))
+        component: lazy(() => import('views/ClaimManagementDetails'))
       },
+      {
+        path: '/management/claims/:id/:tab',
+        exact: true,
+        component: lazy(() => import('views/ClaimManagementDetails'))
+      },
+      {
+    path: '/management/promotions',
+    exact: true,
+    component: lazy(() => import('views/PromotionManagementList'))
+  },
+  {
+    path: '/management/promotions/:id',
+    exact: true,
+    component: lazy(() => import('views/PromotionManagementDetails'))
+  },
+  {
+    path: '/management/promotions/:id/:tab',
+    exact: true,
+    component: lazy(() => import('views/PromotionManagementDetails'))
+  },
+      // {
+      //   path: '/projects/:id',
+      //   exact: true,
+      //   component: lazy(() => import('views/CenterDetails'))
+      // },
+      // {
+      //   path: '/projects/:id/:tab',
+      //   exact: true,
+      //   component: lazy(() => import('views/CenterDetails'))
+      // },
       {
         path: '/projects',
         exact: true,

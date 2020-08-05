@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { makeStyles } from '@material-ui/styles';
-
+import tiempo from 'utils/tiempo';
 import {
   Avatar,
   Card,
@@ -217,7 +217,7 @@ const Results = props => {
                         {/*coupon.spent*/}
                         {coupon.amount}
                       </TableCell>
-                      <TableCell>{new String(new Date(coupon.expirationDate).toString())}</TableCell>
+                      <TableCell>{tiempo.fechayhora(coupon.expirationDate)}</TableCell>
                       <TableCell>{new String(coupon.global != undefined ? coupon.global : false)}</TableCell>
                     {/*}  <TableCell>
                         <ReviewStars value={5} />

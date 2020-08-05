@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Header = props => {
-  const { className, actualizar,setLoading, cboCategories, ...rest } = props;
+  const { className, actualizar,setLoading,restaurantID, cboRestaurants, cboCategories, cboIngredients, ...rest } = props;
 
   const [openEdit, setOpenEdit] = useState(false);
 
@@ -72,6 +72,9 @@ const Header = props => {
         actualizar={actualizar}
         setLoading={setLoading}
         cboCategories={cboCategories}
+        cboRestaurants={cboRestaurants}
+        cboIngredients={cboIngredients}
+        restaurantID={restaurantID}
         />
     </div>
   );

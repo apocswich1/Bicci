@@ -3,8 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { useDispatch, connect } from 'react-redux';
-import { makeStyles } from '@material-ui/styles';
+import { useDispatch, connect, useSelector } from 'react-redux';
+import { makeStyles, withStyles } from '@material-ui/styles';
 import {
   AppBar,
   Badge,
@@ -17,11 +17,14 @@ import {
   Popper,
   Paper,
   List,
+  Typography,
   ListItem,
   ListItemIcon,
   ListItemText,
   ClickAwayListener
 } from '@material-ui/core';
+import { green } from '@material-ui/core/colors';
+import PhoneIcon from '@material-ui/icons/Phone';
 import LockIcon from '@material-ui/icons/LockOutlined';
 import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import InputIcon from '@material-ui/icons/Input';
@@ -34,6 +37,11 @@ import { PricingModal, NotificationsPopover } from 'components';
 import { logout } from 'actions';
 import moment from 'moment';
 import translate from 'translate';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import Help from '../Help';
+import { withRouter } from 'react-router-dom';
 
 const t = translate;
 const useStyles = makeStyles(theme => ({
@@ -108,77 +116,81 @@ const TopBar = props => {
   const [searchValue, setSearchValue] = useState('');
   const [notifications, setNotifications] = useState([]);
   const [openNotifications, setOpenNotifications] = useState(false);
+  const [open, setOpen] = useState(false);
   const [newNotifications, setNewNotifications] = useState('');
+  const [state, setState] = React.useState({ checkedA: false, checkedB: true });
+  const session = useSelector(state => state.session);
 
   useEffect(() => {
     let mounted = true;
-    
-  let doc = firebase.firestore().collection('users');
-  const observer = doc.onSnapshot(docSnapshot => {
- // console.log(`Received doc snapshot: ${docSnapshot}`);
- // console.log(docSnapshot);
-  let data = [];
-  docSnapshot.docChanges().forEach(function(change) {
-    if (change.type === "added") {
-     //   console.log("New city: ", change.doc.data());
-        data = [{
-          id: "uuid()",
-          title: 'New user '+ change.doc.data().email +' is registered',
-          type: 'user',
-          created_at: moment().subtract(1, 'day')
-        }];
-    }
-    if (change.type === "modified") {
-   //     console.log("Modified city: ", change.doc.data());
-        data = [{
-          id: "uuid()",
-          title: 'New user '+ change.doc.data().email +' is modified',
-          type: 'user',
-          created_at: moment().subtract(1, 'day')
-        }];
-    }
-    if (change.type === "removed") {
-     //   console.log("Removed city: ", change.doc.data());
-        data = [{
-          id: "uuid()",
-          title: 'New user '+ change.doc.data().email +' is removed',
-          type: 'user',
-          created_at: moment().subtract(1, 'day')
-        }];
-    }
-});
- /* notifications: [
-    {
-      id: uuid(),
-      title: 'New order has been received',
-      type: 'order',
-      created_at: moment().subtract(2, 'hours')
-    },
-    {
-      id: uuid(),
-      title: 'New user is registered',
-      type: 'user',
-      created_at: moment().subtract(1, 'day')
-    },
-    {
-      id: uuid(),
-      title: 'Project has been approved',
-      type: 'project',
-      created_at: moment().subtract(3, 'days')
-    },
-    {
-      id: uuid(),
-      title: 'New feature has been added',
-      type: 'feature',
-      created_at: moment().subtract(7, 'days')
-    }
-  ]*/
-  setNotifications(data);
-  setNewNotifications(1);
-  // ...
-  }, err => {
-  console.log(`Encountered error: ${err}`);
-  });
+
+    let doc = firebase.firestore().collection('users');
+    const observer = doc.onSnapshot(docSnapshot => {
+      // console.log(`Received doc snapshot: ${docSnapshot}`);
+      // console.log(docSnapshot);
+      let data = [];
+      docSnapshot.docChanges().forEach(function (change) {
+        if (change.type === "added") {
+          //   console.log("New city: ", change.doc.data());
+          data = [{
+            id: "uuid()",
+            title: 'New user ' + change.doc.data().email + ' is registered',
+            type: 'user',
+            created_at: moment().subtract(1, 'day')
+          }];
+        }
+        if (change.type === "modified") {
+          //     console.log("Modified city: ", change.doc.data());
+          data = [{
+            id: "uuid()",
+            title: 'New user ' + change.doc.data().email + ' is modified',
+            type: 'user',
+            created_at: moment().subtract(1, 'day')
+          }];
+        }
+        if (change.type === "removed") {
+          //   console.log("Removed city: ", change.doc.data());
+          data = [{
+            id: "uuid()",
+            title: 'New user ' + change.doc.data().email + ' is removed',
+            type: 'user',
+            created_at: moment().subtract(1, 'day')
+          }];
+        }
+      });
+      /* notifications: [
+         {
+           id: uuid(),
+           title: 'New order has been received',
+           type: 'order',
+           created_at: moment().subtract(2, 'hours')
+         },
+         {
+           id: uuid(),
+           title: 'New user is registered',
+           type: 'user',
+           created_at: moment().subtract(1, 'day')
+         },
+         {
+           id: uuid(),
+           title: 'Project has been approved',
+           type: 'project',
+           created_at: moment().subtract(3, 'days')
+         },
+         {
+           id: uuid(),
+           title: 'New feature has been added',
+           type: 'feature',
+           created_at: moment().subtract(7, 'days')
+         }
+       ]*/
+      setNotifications(data);
+      setNewNotifications(1);
+      // ...
+    }, err => {
+      console.log(`Encountered error: ${err}`);
+    });
+
 
     const fetchNotifications = () => {
       axios.get('/api/account/notifications').then(response => {
@@ -195,8 +207,21 @@ const TopBar = props => {
     };
   }, []);
 
+  const handleChange = async (event) => {
+    let estado = !event.target.checked;
+    setState({ ...state, [event.target.name]: !event.target.checked });
+    // let ref = await firebase.firestore().collection('restaurants').where('starredBy','==',session.user.id).get();
+    // let result = await ref.docs.map(item => {return item.data()});
+    // await firebase.firestore().collection('restaurants').doc(result[0].id).set({offline : estado},{merge: true});
+    console.log(estado ? "Modo offline" : "Modo Online");
+  };
+
+  const handleOpen = event => {
+    setOpen(true);
+  };
+
   const handleLogout = () => {
-    history.push('/auth/login');   
+    history.push('/auth/login');
     dispatch(logout());
   };
 
@@ -241,6 +266,59 @@ const TopBar = props => {
     'Pages'
   ];
 
+  const IOSSwitch = withStyles((theme) => ({
+    root: {
+      width: 42,
+      height: 26,
+      padding: 0,
+      margin: theme.spacing(1),
+    },
+    switchBase: {
+      padding: 1,
+      '&$checked': {
+        transform: 'translateX(16px)',
+        color: theme.palette.common.white,
+        '& + $track': {
+          backgroundColor: '#52d869',
+          opacity: 1,
+          border: 'none',
+        },
+      },
+      '&$focusVisible $thumb': {
+        color: '#52d869',
+        border: '6px solid #fff',
+      },
+    },
+    thumb: {
+      width: 24,
+      height: 24,
+    },
+    track: {
+      borderRadius: 26 / 2,
+      border: `1px solid ${theme.palette.grey[400]}`,
+      backgroundColor: theme.palette.grey[50],
+      opacity: 1,
+      transition: theme.transitions.create(['background-color', 'border']),
+    },
+    checked: {},
+    focusVisible: {},
+  }))(({ classes, ...props }) => {
+    return (
+      <Switch
+        focusVisibleClassName={classes.focusVisible}
+        disableRipple
+        classes={{
+          root: classes.root,
+          switchBase: classes.switchBase,
+          thumb: classes.thumb,
+          track: classes.track,
+          checked: classes.checked,
+        }}
+        {...props}
+      />
+    );
+  });
+  console.log(props.location.pathname);
   return (
     <AppBar
       {...rest}
@@ -271,7 +349,8 @@ const TopBar = props => {
               value={searchValue}
             />
           
-          </div>*/} 
+          </div>*/}
+          <Help open={open} setOpen={setOpen} />
           <Popper
             anchorEl={searchRef.current}
             className={classes.searchPopper}
@@ -310,6 +389,39 @@ const TopBar = props => {
           </Button>*/}
         </Hidden>
         <Hidden mdDown>
+          {(session.user.role !== "ADMIN" && props.location.pathname == "/dashboards/nuevos") && (
+            <React.Fragment>
+              <FormGroup row>
+                <Typography
+                  style={{ fontSize: "24px", paddingRight: "20px", paddingTop: "15px" }}
+                  component="h1"
+                  gutterBottom
+                  variant="overline"
+                >
+                  Recibiendo Pedidos
+            </Typography>
+                <FormControlLabel
+                  control={<IOSSwitch checked={!state.checkedA} onChange={handleChange} name="checkedA" />}
+                  label=""
+                />
+              </FormGroup>
+              <IconButton
+                className={classes.notificationsButton}
+                color="inherit"
+                onClick={handleOpen}
+                ref={notificationsRef}
+              >
+                <PhoneIcon style={{ color: green[500], fontSize: "36px" }} />
+
+              </IconButton>
+            </React.Fragment>
+          )}
+          
+          {(props.location.pathname !== "/dashboards/nuevos"
+          && props.location.pathname !== "/dashboards/encocina"
+          && props.location.pathname !== "/dashboards/historial"
+          && props.location.pathname !== "/dashboards/entrega"
+          && props.location.pathname !== "/dashboards/productos") && (
           <IconButton
             className={classes.notificationsButton}
             color="inherit"
@@ -324,6 +436,7 @@ const TopBar = props => {
               <NotificationsIcon />
             </Badge>
           </IconButton>
+          )}
           <Button
             className={classes.logoutButton}
             color="inherit"
@@ -361,4 +474,4 @@ TopBar.propTypes = {
   onOpenNavBarMobile: PropTypes.func
 };
 
-export default TopBar;
+export default withRouter(TopBar);

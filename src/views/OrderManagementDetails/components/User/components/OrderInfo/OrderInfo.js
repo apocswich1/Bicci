@@ -69,24 +69,24 @@ const OrderInfo = props => {
           <TableBody>
             <TableRow>
               <TableCell>id</TableCell>
-              <TableCell>{usuario.uid}</TableCell>
+              <TableCell>{usuario.userID}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("username")}</TableCell>
-              <TableCell>{usuario.name}</TableCell>
+              <TableCell>{usuario.userName}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("email")}</TableCell>
-              <TableCell>{usuario.email}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t("language")}</TableCell>
-              <TableCell>{new String(usuario.language)}</TableCell>
+              <TableCell>{usuario.userEmail}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("phone")}</TableCell>
-              <TableCell>{usuario.phone ? '+56 9 '+usuario.phone : 'undefined'}</TableCell>
+              <TableCell>{new String(usuario.userPhone)}</TableCell>
             </TableRow>
+            {/* <TableRow>
+              <TableCell>{t("phone")}</TableCell>
+              <TableCell>{usuario.phone ? '+56 9 '+usuario.phone : 'undefined'}</TableCell>
+            </TableRow> */}
           </TableBody>
         </Table>
       </CardContent>

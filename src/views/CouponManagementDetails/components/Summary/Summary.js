@@ -9,7 +9,9 @@ import { CouponInfo, Invoices, SendEmails, OtherActions } from './components';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import config from 'config';
 
+const service = config.servicio;
 const useStyles = makeStyles(() => ({
   root: {}
 }));
@@ -23,9 +25,10 @@ const Summary = props => {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState('');
-  const [cboFranchises, setCboFranchises] = React.useState([]);
+  const [cboRestaurants, setCboRestaurants] = React.useState([]);
+  const [chips, setChips] = React.useState([]);
   const [typeMessage, setTypeMessage] = React.useState('');
-
+  const [cboRegion, setCboRegion] = React.useState('');
 
   const ColorLinearProgress = withStyles({
     colorPrimary: {
@@ -56,18 +59,18 @@ const Summary = props => {
     let mounted = true;
 
     let franchises = [];
-    const cboFranchisesRef = firebase.firestore().collection("franchises").orderBy('name');
+    const cboRestaurantsRef = firebase.firestore().collection("restaurants").orderBy('name');
         //array de cbo de franquicias
-        cboFranchisesRef.get().then((snapshot)=>{
+        cboRestaurantsRef.get().then((snapshot)=>{
             snapshot.forEach(function(doc) {
                 franchises.push(doc.data());
         });
-        setCboFranchises(franchises);
+        setCboRestaurants(franchises);
         }).catch((error)=>{
         console.log("Error getting documents");     
-        });
+        });    
 
-    const fetchCoupon = async () => {
+    const fetchCoupon = () => {
       let coupons = [];
       /*const refCoupon = firebase.firestore().collection('coupons').doc(props.id);
       refCoupon.get().then(async data=>{
@@ -76,13 +79,21 @@ const Summary = props => {
         setCoupon(coupons[0]);
       }).catch(err => console.log(err));
 */
-      fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listCouponsAdminByCouponId', {
+      fetch(service+'listCouponsAdminByCouponId', {
         method: 'post',
         mode: 'cors',
         body: JSON.stringify({ 'uid':props.id }),
       }).then(function (respuesta) {
-        respuesta.json().then(body => {
-          console.log(body);
+        respuesta.json().then(async body => {
+          let allchips = [];
+          for(let i=0; i < body.data.restaurants.length; i++){
+            console.log(body.data.restaurants[i]);
+            let infoRef = await firebase.firestore().collection('restaurants').doc(body.data.restaurants[i]).get();
+            let result = await infoRef.data();
+            let chip = {'key':result.id,'label':result.name};
+            allchips.push(chip);
+          }
+          setChips(allchips);
           setCoupon(body.data);
           console.log(body.data);
         });
@@ -90,6 +101,18 @@ const Summary = props => {
         console.log(err);
       });
     };  
+
+    const fetchRegions = async () => {
+      try{
+        let refregions = await firebase.firestore().collection('zones').get();
+        let result = await refregions.docs.map(item => {return item.data()});
+        setCboRegion(result); 
+      }catch(error){
+        console.log(error);
+      }
+  };
+
+  fetchRegions();
 
     fetchCoupon();
 
@@ -157,7 +180,7 @@ const Summary = props => {
         {loading && (
       <ColorLinearProgress className={classes.margin} />
       )}
-        <CouponInfo coupon={coupon} actualizar={actualizar} cboFranchises={cboFranchises}/>
+        <CouponInfo coupon={coupon} chips={chips} actualizar={actualizar}  cboRegion={cboRegion} cboRestaurants={cboRestaurants}/>
       </Grid>
       {/*<Grid
         item

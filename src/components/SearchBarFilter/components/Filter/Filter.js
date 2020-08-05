@@ -125,6 +125,7 @@ const Filter = props => {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [selectedDateFin, setSelectedDateFin] = React.useState(new Date());
   const [customers, setCustomers] = useState([]);
+  const [opent, setOpent] = useState(true);
   const posts = [];
   let ordenes = "";
   
@@ -138,34 +139,67 @@ const Filter = props => {
     fetchCustomers2();
   };
   
-  const fetchCustomers2 = () => {
+  const fetchCustomers2 = async () => {
     
-    let fechaInicio = firebase.firestore.Timestamp.fromDate(new Date(selectedDate));
-    let fechaFin = firebase.firestore.Timestamp.fromDate(new Date(selectedDateFin));
-    const refUsers = firebase.firestore().collection('orders')
-    .where('date','>=',fechaInicio)
-    .where('date','<=',fechaFin)
-    .orderBy('date', 'desc')
-    .get()
-    .then(snapshot => {
-      console.log("Aquiiiii");
-      if (snapshot.empty) {
-        console.log('No matching documents.');
-        return;
-      }
+    // let fechaInicio = firebase.firestore.Timestamp.fromDate(new Date(selectedDate));
+    // let fechaFin = firebase.firestore.Timestamp.fromDate(new Date(selectedDateFin));
+    // const refUsers = firebase.firestore().collection('orders')
+    // .where('date','>=',fechaInicio)
+    // .where('date','<=',fechaFin)
+    // .orderBy('date', 'desc')
+    // .get()
+    // .then(snapshot => {
+    //   console.log("Aquiiiii");
+    //   if (snapshot.empty) {
+    //     console.log('No matching documents.');
+    //     return;
+    //   }
   
-      snapshot.forEach(doc => {
-        console.log(doc.id, '=>', doc.data());
-        posts.push(doc.data());
-      });
-      console.log(posts)
-     // setCustomers(posts);
-     //ordenes = posts;
-     //posts = [];
-    })
-    .catch(err => {
-      console.log('Error getting documents', err);
-    });
+    //   snapshot.forEach(doc => {
+    //     console.log(doc.id, '=>', doc.data());
+    //     posts.push(doc.data());
+    //   });
+    //   console.log(posts)
+    // })
+    // .catch(err => {
+    //   console.log('Error getting documents', err);
+    // });
+
+     let fechaInicio = firebase.firestore.Timestamp.fromDate(new Date(selectedDate));
+    let fechaFin = firebase.firestore.Timestamp.fromDate(new Date(selectedDateFin));
+    const refUsers = await firebase.firestore().collection('orders')
+      .where('date', '>=', fechaInicio)
+      .where('date', '<=', fechaFin)
+      .orderBy('date', 'desc')
+      .get();
+    let result = await refUsers.docs.map(item => { return item.data() });
+    if (result.empty) {
+      console.log('No matching documents.');
+      return;
+    }
+    for(let i=0; i<result.length; i++){
+      console.log(result[i]);
+
+      let employee = await firebase.firestore().collection('employees').doc(result[i].userID).get();
+      let emp = await employee.data();
+      // console.log(emp)
+      // console.log(item)
+      if(emp){
+        result[i].centerName = emp.centerName;
+        result[i].companyName = emp.companyName;
+        posts.push(result[i]);
+      //  console.log(posts);
+      }else{
+        result[i].centerName = 'No aplica';
+        result[i].companyName = 'No aplica';
+        posts.push(result[i]);
+      //  console.log(posts);
+      }
+      
+      console.log(posts);
+      setOpent(true);
+    }
+    //
   }
 
   fetchCustomers2();
@@ -582,7 +616,12 @@ const Filter = props => {
             Clear
           </Button>
           <br />
-          <ReportOrders selectedDate={selectedDate}  selectedDateFin={selectedDateFin} customers={posts}/>
+          {opent===true ? (
+            <ReportOrders selectedDate={selectedDate}  opent={opent} selectedDateFin={selectedDateFin} customers={posts}/>
+          ):(
+            "Cargando..."
+          )}
+          
           {/* <Button
             color="primary"
             fullWidth

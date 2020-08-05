@@ -56,6 +56,7 @@ const Dashboard = props => {
         onOpenNavBarMobile={handleNavBarMobileOpen}
       />
       <div className={classes.container}>
+        {/* Cocinaaaa */}
         <NavBar
           className={classes.navBar}
           onMobileClose={handleNavBarMobileClose}

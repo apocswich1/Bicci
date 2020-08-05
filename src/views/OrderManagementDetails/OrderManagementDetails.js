@@ -33,37 +33,45 @@ const OrderManagementDetails = props => {
     let mounted = true;
 
     const fetchOrder = async () => {
-      fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdminByOrderId', {
-        method: 'post',
-        mode: 'cors',
-        body: JSON.stringify({ 'id': id }),
-      }).then(function (respuesta) {
-        respuesta.json().then(body => {
-          console.log(body);
-          let uid = body.data.userID;
-          let washerID = body.data.washerID;
+      const refOrder = await firebase.firestore().collection('orders').doc(id).get();
+      const datos = await refOrder.data();
+      console.log(datos);
+      let uid = datos.userID;
+      let driverID = datos.driverID;
+      setUsuario(datos);
+      setWasher(datos);
+
+      // fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdminByOrderId', {
+      //   method: 'post',
+      //   mode: 'cors',
+      //   body: JSON.stringify({ 'id': id }),
+      // }).then(function (respuesta) {
+      //   respuesta.json().then(body => {
+      //     console.log(body);
+      //     let uid = body.data.userID;
+      //     let washerID = body.data.washerID;
           
-          // usuario
-          const refUsuario = firebase.firestore().collection('users').doc(uid);
-          let usuario = [];
-          refUsuario.get().then(async data => {
-            await usuario.push(data.data());
-            console.log(usuario[0]);
-            setUsuario(usuario[0]);
-          }).catch(err => console.log(err));
+      //     // usuario
+      //     const refUsuario = firebase.firestore().collection('users').doc(uid);
+      //     let usuario = [];
+      //     refUsuario.get().then(async data => {
+      //       await usuario.push(data.data());
+      //       console.log(usuario[0]);
+      //       setUsuario(usuario[0]);
+      //     }).catch(err => console.log(err));
           
-          // washer
-          const refWasher = firebase.firestore().collection('washers').doc(washerID);
-          let washer = [];
-          refWasher.get().then(async data => {
-            await washer.push(data.data());
-            console.log(washer[0]);
-            setWasher(washer[0]);
-          }).catch(err => console.log(err));
-        });
-      }).catch(function (err) {
-        console.log(err);
-      });
+      //     // washer
+      //     const refWasher = firebase.firestore().collection('washers').doc(washerID);
+      //     let washer = [];
+      //     refWasher.get().then(async data => {
+      //       await washer.push(data.data());
+      //       console.log(washer[0]);
+      //       setWasher(washer[0]);
+      //     }).catch(err => console.log(err));
+      //   });
+      // }).catch(function (err) {
+      //   console.log(err);
+      // });
     };
 
     fetchOrder();
@@ -80,7 +88,7 @@ const OrderManagementDetails = props => {
   const tabs = [
     { value: 'summary', label: 'Summary' },
     { value: 'user', label: 'User Data' },
-    { value: 'washer', label: 'Prowasher Data' },
+    { value: 'driver', label: 'Driver Data' },
     { value: 'billing', label: 'Billing' },
     // { value: 'ubicacion', label: 'Ubicación' },
     //{ value: 'invoices', label: 'Order Venues' },
@@ -120,7 +128,7 @@ const OrderManagementDetails = props => {
       <div className={classes.content}>
         {tab === 'summary' && <Summary id={id} />}
         {tab === 'user' && <User id={id} usuario={usuario}/>}
-        {tab === 'washer' && <Washer id={id}  washer={washer}/>}
+        {tab === 'driver' && <Washer id={id}  washer={washer}/>}
         {tab === 'billing' && <Billing id={id} />}
         {/* {tab === 'ubicacion' && <Ubicacion id={id} />} */}
         {/*tab === 'invoices' && <Invoices id={id}/>*/}

@@ -17,6 +17,8 @@ const Summary = props => {
   const { className, ...rest } = props;
   const classes = useStyles();
   const [order, setOrder] = useState();
+  const [claim, setClaim] = useState();
+  const [datosUser, setDatosUser] = useState();
   const [vertical, setVertical] = React.useState('top');
   const [horizontal, setHorizontal] = React.useState('center');
   const [open, setOpen] = React.useState(false);
@@ -55,27 +57,46 @@ const Summary = props => {
 
     const fetchOrder = async () => {
       let orders = [];
-      /*const refOrder = firebase.firestore().collection('orders').doc(props.id);
-      refOrder.get().then(async data=>{
-        await orders.push(data.data());        
-        orders[0].uid = props.id;
-        setOrder(orders[0]);
-      }).catch(err => console.log(err));
-*/
-      fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdminByOrderId', {
-        method: 'post',
-        mode: 'cors',
-        body: JSON.stringify({ 'id':props.id }),
-      }).then(function (respuesta) {
-        respuesta.json().then(body => {
-          console.log(body);
-          setOrder(body.data);
-          console.log(body.data);
-        });
-      }).catch(function (err) {
-        console.log(err);
-      });
-    };  
+      try {
+        const refOrder = await firebase.firestore().collection('orders').doc(props.id).get();
+        const datos = await refOrder.data();
+
+        const refClaim = await firebase.firestore().collection('claims').where('orderID','==',props.id).get();
+        const datosClaim = await refClaim.docs.map(item =>{ return item.data()});
+
+        const refUser = await firebase.firestore().collection('employees').where('userID','==',datos.userID).get();
+        const datosUser = await refUser.docs.map(item =>{ return item.data()});
+
+        if(datosUser.length > 0){
+          console.log("Hay datos");
+          setDatosUser(datosUser);
+        }else{
+          console.log("No hay datos");
+          setDatosUser([]);
+        }
+
+        let uid = datos.userID;
+        let driverID = datos.driverID;
+        setOrder(datos);
+        setClaim(datosClaim);
+      } catch (error) {
+        console.log(error);
+      }
+
+      // fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdminByOrderId', {
+      //   method: 'post',
+      //   mode: 'cors',
+      //   body: JSON.stringify({ 'id':props.id }),
+      // }).then(function (respuesta) {
+      //   respuesta.json().then(body => {
+      //     console.log(body);
+      //     setOrder(body.data);
+      //     console.log(body.data);
+      //   });
+      // }).catch(function (err) {
+      //   console.log(err);
+      // });
+    };
 
     fetchOrder();
 
@@ -85,27 +106,27 @@ const Summary = props => {
   }, []);
 
 
-  const actualizar = async (msg,bodyres) => {
+  const actualizar = async (msg, bodyres) => {
     let message = msg;
     let res = bodyres;
     let orders = [];
     console.log("Actualizando...");
     setLoading(true);
     const refOrder = firebase.firestore().collection('orders').doc(props.id);
-    refOrder.get().then(async data=>{
-      await orders.push(data.data());        
+    refOrder.get().then(async data => {
+      await orders.push(data.data());
       orders[0].id = props.id;
       setOrder(orders[0]);
       console.log("Actualizado");
-      
-      if(res.code === 200){
+
+      if (res.code === 200) {
         setMessage(message);
         setTypeMessage('success');
-      }else{
+      } else {
         setMessage(res.message);
         setTypeMessage('warning');
       }
-      
+
       setLoading(false);
       setOpen(true);
     }).catch(err => console.log(err));
@@ -123,38 +144,40 @@ const Summary = props => {
       spacing={3}
     >
       <Snackbar
-    autoHideDuration={6000}
-    anchorOrigin={{ vertical, horizontal }}
-    key={`${vertical},${horizontal}`}
-    open={open}
-    onClose={handleClose}
-  >
-    <Alert onClose={handleClose} severity={typeMessage}>
-      {message}
-    </Alert>
-    </Snackbar>
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical, horizontal }}
+        key={`${vertical},${horizontal}`}
+        open={open}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity={typeMessage}>
+          {message}
+        </Alert>
+      </Snackbar>
       <Grid
         item
-        lg={5}
-        md={5}
-        xl={5}
+        lg={8}
+        md={8}
+        xl={8}
         xs={12}
       >
         {loading && (
-      <ColorLinearProgress className={classes.margin} />
-      )}
-        <OrderInfo order={order} actualizar={actualizar}/>
+          <ColorLinearProgress className={classes.margin} />
+        )}
+        <OrderInfo order={order} actualizar={actualizar} claim={claim} datosUser={datosUser}/>
       </Grid>
-      <Grid
+      {order.driverLocation !== undefined && (
+        <Grid
         item
-        lg={7}
-        md={7}
-        xl={7}
+        lg={4}
+        md={4}
+        xl={4}
         xs={12}
       >
         <MapaInfo order={order}/>
       </Grid>
-    {/*}  <Grid
+      )}
+      {/*}  <Grid
         item
         lg={4}
         md={4}
@@ -170,7 +193,7 @@ const Summary = props => {
         xl={8}
         xs={12}
       >
-        <OtherActions  order={order} actualizar={actualizar}/>
+        <OtherActions order={order} actualizar={actualizar} />
       </Grid>
     </Grid>
   );

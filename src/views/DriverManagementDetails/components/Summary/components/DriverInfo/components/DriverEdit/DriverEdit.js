@@ -139,21 +139,21 @@ const DriverEdit = props => {
     //   roleErrorMessage = "Debe introducir un role valido";
     // }
 
-    if(!formState.phone){
-      phoneError = "Debe introducir un telefono valido";
-      phoneErrorMessage = "Debe introducir un telefono valido";
-    }
+    // if(!formState.phone){
+    //   phoneError = "Debe introducir un telefono valido";
+    //   phoneErrorMessage = "Debe introducir un telefono valido";
+    // }
 
     // if(!formState.language || (formState.language=="")){
     //   languageError = "Debe introducir un lenguage valido";
     //   languageErrorMessage = "Debe introducir un lenguage valido";
     // }
 
-    if(nameError || emailError || passwordError || roleError || roleError || phoneError || dniError || addressError || bicciNumberError || walletError){
+    if(nameError || emailError || passwordError || roleError || roleError || dniError || addressError || bicciNumberError){
       setFormState(formState => ({
         ...formState,
-        nameError,emailError,passwordError,roleError,phoneError,passwordRepeatError,languageError,dniError,addressError,bicciNumberError,walletError,
-        nameErrorMessage,emailErrorMessage,passwordErrorMessage,passwordRepeatErrorMessage,roleErrorMessage,phoneErrorMessage,languageErrorMessage,dniErrorMessage,addressErrorMessage,bicciNumberErrorMessage,walletErrorMessage
+        nameError,emailError,passwordError,roleError,passwordRepeatError,languageError,dniError,addressError,bicciNumberError,
+        nameErrorMessage,emailErrorMessage,passwordErrorMessage,passwordRepeatErrorMessage,roleErrorMessage,languageErrorMessage,dniErrorMessage,addressErrorMessage,bicciNumberErrorMessage
       }));
       return false;
     }
@@ -172,12 +172,12 @@ const DriverEdit = props => {
       "active":formState.active,
       "name":formState.name,
       "address":formState.address,
-      "wallet":formState.wallet,
+      "wallet":0,
       "dni":formState.dni,
       "bicciNumber":formState.bicciNumber,
       "role":formState.role,
       "email":formState.email,
-      "phone":formState.phone,
+     // "phone":formState.phone,
       "language":formState.language ? formState.language : "es",
       "agree_terms":formState.agree_terms ? formState.agree_terms : true
     }
@@ -272,7 +272,7 @@ const DriverEdit = props => {
                   helperText={formState.languageErrorMessage}
                 />
               </Grid> */}
-              <Grid
+              {/* <Grid
                 item
                 md={6}
                 xs={12}
@@ -286,11 +286,11 @@ const DriverEdit = props => {
                   variant="outlined"
                   error={formState.phoneError}
                   helperText={formState.phoneErrorMessage}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
-                  }}
+                  // InputProps={{
+                  //   startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
+                  // }}
                 />
-              </Grid>
+              </Grid> */}
               <Grid
                 item
                 md={6}
@@ -314,7 +314,7 @@ const DriverEdit = props => {
               >
                 <TextField
                   fullWidth
-                  label={t("Dni number")}
+                  label={t("Rut")}
                   name="dni"
                   onChange={handleFieldChange}
                   value={formState.dni}
@@ -339,7 +339,7 @@ const DriverEdit = props => {
                   helperText={formState.addressErrorMessage}
                 />
               </Grid>
-              <Grid
+              {/* <Grid
                 item
                 md={6}
                 xs={12}
@@ -354,7 +354,7 @@ const DriverEdit = props => {
                   error={formState.walletError}
                   helperText={formState.walletErrorMessage}
                 />
-              </Grid>
+              </Grid> */}
               {/* <Grid
                 item
                 md={12}

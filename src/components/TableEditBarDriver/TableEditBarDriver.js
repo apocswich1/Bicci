@@ -71,7 +71,7 @@ const TableEditBarDriver = props => {
     }
     let msg = "Status modificado exitosamente!";
     console.log(params);
-    fetch(service+'userStatusAdmin', {
+    fetch(service+'driverStatusAdmin', {
         method: 'post',
         mode: 'cors',
         body: JSON.stringify(params)

@@ -44,14 +44,14 @@ const useStyles = makeStyles(theme => ({
 }));
 const OtherActions = props => {
   const { className, driver,actualizar, ...rest } = props;
-  const driverId = driver.uid;
+  const driverId = driver.id;
   const classes = useStyles();
   
   const disableAccount = ()=>{
-  let params = { "uid":driverId, "active":false }
+  let params = { "id":driverId, "active":false }
   let msg = "Usuario desactivado exitosamente!";
   console.log(params);  
-    fetch(service+'userStatusAdmin', {
+    fetch(service+'driverStatusAdmin', {
         method: 'post',
         mode: 'cors',
         body: JSON.stringify(params)
@@ -66,10 +66,10 @@ const OtherActions = props => {
   }
 
   const enableAccount = ()=>{
-    let params = { "uid":driverId, "active":true }
+    let params = { "id":driverId, "active":true }
     let msg = "Usuario activado exitosamente!";
     console.log(params);  
-      fetch(service+'userStatusAdmin', {
+      fetch(service+'driverStatusAdmin', {
           method: 'post',
           mode: 'cors',
           body: JSON.stringify(params)
@@ -84,10 +84,10 @@ const OtherActions = props => {
     }
 
     const deleteAccount = ()=>{
-      let params = { "uid":driverId }
+      let params = { "id":driverId }
       let msg = "Usuario borrado exitosamente!";
       console.log(params);  
-        fetch(service+'userDeleteAdmin', {
+        fetch(service+'driverDeleteAdmin', {
             method: 'post',
             mode: 'cors',
             body: JSON.stringify(params)
@@ -110,7 +110,7 @@ const OtherActions = props => {
       <Divider />
       <CardContent>
       <div className={classes.mainActions}>
-          {(driver.isActive)?(
+          {(driver.active)?(
             <Button onClick={disableAccount}>
             <NotInterestedIcon className={classes.buttonIcon} />
             {t("Disable")} {t("Driver")} {t("Account")}
@@ -121,10 +121,10 @@ const OtherActions = props => {
             {t("Enable")} {t("Driver")} {t("Account")}
           </Button>
           )}
-          <Button>
+          {/* <Button>
             <GetAppIcon className={classes.buttonIcon} />
             {t("Export Data")}
-          </Button>
+          </Button> */}
         </div>
         <Typography
           className={classes.notice}
@@ -133,10 +133,10 @@ const OtherActions = props => {
           Remove this this driver’s data if he requested that, if not please
           be aware that what has been deleted can never brough back
         </Typography>
-        <Button className={classes.deleteButton} onClick={deleteAccount}>
+        {/* <Button className={classes.deleteButton} onClick={deleteAccount}>
           <DeleteIcon className={classes.buttonIcon} />
           {t("Delete")} {t("Driver")} {t("Account")}
-        </Button>
+        </Button> */}
       </CardContent>
     </Card>
   );

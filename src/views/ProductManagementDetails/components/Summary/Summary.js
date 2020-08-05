@@ -5,7 +5,7 @@ import { makeStyles, withStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 import firebase from 'utils/firebase';
 import axios from 'utils/axios';
-import { ProductInfo, ProductInfoPrice, Invoices, SendEmails, OtherActions } from './components';
+import { ProductInfo, Avatar, Invoices, SendEmails, OtherActions } from './components';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -32,6 +32,10 @@ const Summary = props => {
   const [message, setMessage] = React.useState('');
   const [typeMessage, setTypeMessage] = React.useState('');
   const [cboCategories, setCboCategories] = React.useState([]);
+  const [cboRestaurants, setCboRestaurants] = React.useState([]);
+  const [cboIngredients, setCboIngredients] = React.useState([]);
+  const [chips, setChips] = React.useState([]);
+  const [chips2, setChips2] = React.useState([]);
 
   const ColorLinearProgress = withStyles({
     colorPrimary: {
@@ -61,22 +65,82 @@ const Summary = props => {
   useEffect(() => {
     let mounted = true;
 
-    const fetchCboCategories = async () => {
-      let categories = [];
-      const cboCategoriesRef = firebase.firestore().collection("categories").orderBy('name');
+    const fetchCboRestaurants = async () => {
+      let restaurants = [];
+      const cboRestaurantsRef = firebase.firestore().collection("restaurants").orderBy('name');
 
-      cboCategoriesRef.get().then((snapshot) => {
+      cboRestaurantsRef.get().then((snapshot) => {
         snapshot.forEach(function (doc) {
-          categories.push(doc.data());
+          restaurants.push(doc.data());
         });
-        
-          setCboCategories(categories);
-        
+
+        setCboRestaurants(restaurants);
+
       }).catch((error) => {
         console.log("Error getting documents");
       });
     }
 
+
+    const fetchCboCategories = async () => {
+      let categories = [];
+      let cboCategoriesRef = "";
+      if (props.idrestaurant) {
+        cboCategoriesRef = firebase.firestore().collection("restaurants")
+          .doc(props.idrestaurant).collection('foodCategories').orderBy('name');
+        cboCategoriesRef.get().then((snapshot) => {
+          snapshot.forEach(function (doc) {
+            categories.push(doc.data());
+          });
+          console.log(categories);
+          setCboCategories(categories);
+
+        }).catch((error) => {
+          console.log("Error getting documents");
+        });
+      } else {
+        cboCategoriesRef = firebase.firestore().collection("restaurants")
+          .orderBy('name');
+        console.log(categories);
+        setCboCategories(categories);
+      }
+    }
+
+    const fetchCboIngredients = async () => {
+      let ingredients = [];
+      try {
+        if (props.idrestaurant) {
+          const cboIngredientsRef = await firebase.firestore().collection("ingredients")
+          .where('restaurantID','==',props.idrestaurant).orderBy('name').get();
+          const datos = await cboIngredientsRef.docs.map(item => {return item.data()});
+          console.log(datos);
+          setCboIngredients(datos);
+        }else{
+          const cboIngredientsRef = await firebase.firestore().collection("ingredients")
+          .orderBy('name').get();
+          const datos = await cboIngredientsRef.docs.map(item => {return item.data()});
+          setCboIngredients(datos);
+        }  
+      } catch (error) {
+        console.log(error);
+      }
+      
+      
+
+      // cboIngredientsRef.get().then((snapshot) => {
+      //   snapshot.forEach(function (doc) {
+      //     ingredients.push(doc.data());
+      //   });
+
+      //   setCboIngredients(ingredients);
+
+      // }).catch((error) => {
+      //   console.log("Error getting documents");
+      // });
+    }
+
+    fetchCboRestaurants();
+    fetchCboIngredients();
     fetchCboCategories();
 
     const fetchProductPrice = async () => {
@@ -86,53 +150,80 @@ const Summary = props => {
         snapshot.forEach(function (doc) {
           storeProduct.push(doc.data());
         });
-        
+
         setStoreProducts(storeProduct);
         console.log(storeProduct);
         setSalcobrand(storeProduct.filter(item => item.storeName == "Salcobrand"));
         setCruzverde(storeProduct.filter(item => item.storeName == "Cruz Verde"));
         setAhumada(storeProduct.filter(item => item.storeName == "Farmacia Ahumada"));
-        
+
       }).catch((error) => {
         console.log("Error getting documents");
       });
-    };  
+    };
 
     fetchProductPrice();
 
     const fetchProduct = async () => {
-      fetch(service+'listProductsAdminByProductId', {
+      fetch(service + 'listProductsAdminByProductId', {
         method: 'post',
         mode: 'cors',
-        body: JSON.stringify({ 'id':props.id }),
+        body: JSON.stringify({ 'id': props.id }),
       }).then(function (respuesta) {
-        respuesta.json().then(body => {
+        respuesta.json().then(async body => {
           console.log(body);
+          let allchips = [];
+          let allchips2 = [];
+          if (body.data.aditionalIngredients) {
+            for (let i = 0; i < body.data.aditionalIngredients.length; i++) {
+              console.log(body.data.aditionalIngredients[i]);
+              let infoRef = await firebase.firestore().collection('ingredients').doc(body.data.aditionalIngredients[i]).get();
+              let result = await infoRef.data();
+              let chip = { 'key': result.id, 'label': result.name };
+              allchips.push(chip);
+            }
+          }
+          if (body.data.categoriesInvolved) {
+            for (let i = 0; i < body.data.categoriesInvolved.length; i++) {
+              console.log(body.data.categoriesInvolved[i]);
+              let infoRef = await firebase.firestore().collection('restaurants')
+                .doc(props.idrestaurant).collection('foodCategories')
+                .doc(body.data.categoriesInvolved[i]).get();
+              let result = await infoRef.data();
+              if (result) {
+                let chip2 = { 'key': result.id, 'label': result.name };
+                allchips2.push(chip2);
+              }
+            }
+          }
+
+          setChips(allchips);
+          setChips2(allchips2);
           setProduct(body.data);
           console.log(body.data);
           // *******************
           let storeProduct = [];
-      const refProduct = firebase.firestore().collection('products').doc(props.id).collection("storeProducts");
-      refProduct.get().then((snapshot) => {
-      snapshot.forEach(function (doc) {
-        storeProduct.push(doc.data());
-      });
-      
-      setStoreProducts(storeProduct);
-      console.log(storeProduct);
-      setSalcobrand(storeProduct.filter(item => item.storeName == "Salcobrand"));
-      setCruzverde(storeProduct.filter(item => item.storeName == "Cruz Verde"));
-      setAhumada(storeProduct.filter(item => item.storeName == "Farmacia Ahumada"));
-      
-    }).catch((error) => {
-      console.log("Error getting documents");
-    });
+          const refProduct = firebase.firestore().collection('products').doc(props.id).collection("storeProducts");
+          refProduct.get().then((snapshot) => {
+            snapshot.forEach(function (doc) {
+              storeProduct.push(doc.data());
+            });
+
+            setStoreProducts(storeProduct);
+            console.log(storeProduct);
+            setSalcobrand(storeProduct.filter(item => item.storeName == "Salcobrand"));
+            setCruzverde(storeProduct.filter(item => item.storeName == "Cruz Verde"));
+            setAhumada(storeProduct.filter(item => item.storeName == "Farmacia Ahumada"));
+
+          }).catch((error) => {
+            console.log("Error getting documents");
+          });
           // ******************
         });
       }).catch(function (err) {
         console.log(err);
       });
-    };  
+    };
 
     fetchProduct();
 
@@ -141,7 +232,7 @@ const Summary = props => {
     };
   }, []);
 
-  
+
   const productPrice = async () => {
     let storeProduct = [];
     const refProduct = firebase.firestore().collection('products').doc(props.id).collection("storeProducts");
@@ -149,39 +240,39 @@ const Summary = props => {
       snapshot.forEach(function (doc) {
         storeProduct.push(doc.data());
       });
-      
+
       setStoreProducts(storeProduct);
       console.log(storeProduct);
       setSalcobrand(storeProduct.filter(item => item.storeName == "Salcobrand"));
       setCruzverde(storeProduct.filter(item => item.storeName == "Cruz Verde"));
       setAhumada(storeProduct.filter(item => item.storeName == "Farmacia Ahumada"));
-      
+
     }).catch((error) => {
       console.log("Error getting documents");
     });
-  };  
+  };
 
-  const actualizar = async (msg,bodyres) => {
+  const actualizar = async (msg, bodyres) => {
     let message = msg;
     let res = bodyres;
     let products = [];
     console.log("Actualizando...");
     setLoading(true);
     const refProduct = firebase.firestore().collection('products').doc(props.id);
-    refProduct.get().then(async data=>{
-      await products.push(data.data());        
+    refProduct.get().then(async data => {
+      await products.push(data.data());
       products[0].id = props.id;
       setProduct(products[0]);
       console.log("Actualizado");
-      
-      if(res.code === 200){
+
+      if (res.code === 200) {
         setMessage(message);
         setTypeMessage('success');
-      }else{
+      } else {
         setMessage(res.message);
         setTypeMessage('warning');
       }
-      
+
       setLoading(false);
       setOpen(true);
     }).catch(err => console.log(err));
@@ -199,16 +290,16 @@ const Summary = props => {
       spacing={3}
     >
       <Snackbar
-    autoHideDuration={6000}
-    anchorOrigin={{ vertical, horizontal }}
-    key={`${vertical},${horizontal}`}
-    open={open}
-    onClose={handleClose}
-  >
-    <Alert onClose={handleClose} severity={typeMessage}>
-      {message}
-    </Alert>
-    </Snackbar>
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical, horizontal }}
+        key={`${vertical},${horizontal}`}
+        open={open}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity={typeMessage}>
+          {message}
+        </Alert>
+      </Snackbar>
       <Grid
         item
         lg={8}
@@ -219,7 +310,14 @@ const Summary = props => {
         {/* {loading && (
       <ColorLinearProgress className={classes.margin} />
       )} */}
-        <ProductInfo product={product} actualizar={actualizar} cboCategories={cboCategories} />
+        <ProductInfo
+          chips={chips}
+          chips2={chips2}
+          product={product}
+          actualizar={actualizar}
+          cboCategories={cboCategories}
+          cboIngredients={cboIngredients}
+          cboRestaurants={cboRestaurants} />
       </Grid>
       <Grid
         item
@@ -231,13 +329,8 @@ const Summary = props => {
         {/* {loading && (
       <ColorLinearProgress className={classes.margin} />
       )} */}
-        <ProductInfoPrice  
-        salcobrand={salcobrand} 
-        ahumada={ahumada} 
-        cruzverde={cruzverde} 
-        store={storeProducts} 
-        product={product} actualizar={actualizar} cboCategories={cboCategories}
-        productPrice={ productPrice }/>
+        <Avatar
+          product={product} actualizar={actualizar} cboCategories={cboCategories} />
       </Grid>
       {/*<Grid
         item
@@ -248,7 +341,7 @@ const Summary = props => {
       >
         <Invoices product={product} />
       </Grid>*/}
-    {/*}  <Grid
+      {/*}  <Grid
         item
         lg={4}
         md={4}
@@ -264,7 +357,7 @@ const Summary = props => {
         xl={8}
         xs={12}
       >
-        <OtherActions  product={product} actualizar={actualizar}/>
+        <OtherActions product={product} actualizar={actualizar} />
       </Grid>
     </Grid>
   );

@@ -20,13 +20,15 @@ const AuthGuard = props => {
       return;
     }
 
+    //console.log(roles);
+
     if (!roles.includes(session.user.role)) {
       router.history.push('/errors/error-401');
     }
 
-    if (session.user.role=="FRANCHISE") {
-      router.history.push('/overview');
-    }
+    //  if (session.user.role=="Administrator") {
+    //    router.history.push('/overview');
+    //  }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);

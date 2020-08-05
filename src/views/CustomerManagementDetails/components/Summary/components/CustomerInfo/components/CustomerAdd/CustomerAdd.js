@@ -265,9 +265,9 @@ const CustomerAdd = props => {
                   variant="outlined"
                   error={formState.phoneError}
                   helperText={formState.phoneErrorMessage}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
-                  }}
+                  // InputProps={{
+                  //   startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
+                  // }}
                 />
               </Grid>
               <Grid

@@ -136,11 +136,11 @@ const DriverAdd = props => {
       addressErrorMessage = "Debe introducir un address valido";
     }
 
-    if(nameError || emailError || passwordError || roleError){
+    if(nameError || emailError){
       setFormState(formState => ({
         ...formState,
-        nameError,emailError,passwordError,roleError,phoneError,passwordRepeatError,dniError,addressError,
-        nameErrorMessage,emailErrorMessage,passwordErrorMessage,passwordRepeatErrorMessage,roleErrorMessage,phoneErrorMessage,dniErrorMessage,addressErrorMessage
+        nameError,emailError,phoneError,passwordRepeatError,dniError,addressError,
+        nameErrorMessage,emailErrorMessage,phoneErrorMessage,dniErrorMessage,addressErrorMessage
       }));
       return false;
     }
@@ -170,8 +170,8 @@ const DriverAdd = props => {
         "name": formState.name,
         "email": formState.email,
         "phone": formState.phone,
-        "password": formState.password,
-        "role": formState.role,
+        //"password": formState.password,
+        "role": "driver",
         "dni": formState.dni,
         "address": formState.address,
       }
@@ -251,7 +251,7 @@ const DriverAdd = props => {
                   helperText={formState.nameErrorMessage}
                 />
               </Grid>
-              <Grid
+              {/* <Grid
                 item
                 md={6}
                 xs={12}
@@ -266,7 +266,7 @@ const DriverAdd = props => {
                   error={formState.roleError}
                   helperText={formState.roleErrorMessage}
                 />
-              </Grid>
+              </Grid> */}
               <Grid
                 item
                 md={6}
@@ -281,9 +281,9 @@ const DriverAdd = props => {
                   variant="outlined"
                   error={formState.phoneError}
                   helperText={formState.phoneErrorMessage}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
-                  }}
+                  // InputProps={{
+                  //   startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
+                  // }}
                 />
               </Grid>
               <Grid
@@ -293,7 +293,7 @@ const DriverAdd = props => {
               >
                 <TextField
                   fullWidth
-                  label={T("Dni")}
+                  label={T("Rut")}
                   name="dni"
                   onChange={handleFieldChange}
                   value={formState.dni}
@@ -318,7 +318,7 @@ const DriverAdd = props => {
                   helperText={formState.addressErrorMessage}
                 />
               </Grid>
-              <Grid
+              {/* <Grid
                 item
                 md={6}
                 xs={12}
@@ -351,9 +351,9 @@ const DriverAdd = props => {
                   error={formState.passwordRepeatError}
                   helperText={formState.passwordRepeatErrorMessage}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item />
-              <Grid
+              {/* <Grid
                 item
                 md={6}
                 xs={12}
@@ -367,7 +367,7 @@ const DriverAdd = props => {
                   onChange={handleFieldChange}
                   value={formState.isActive}
                 />
-              </Grid>
+              </Grid> */}
             </Grid>
           </CardContent>
           <CardActions className={classes.actions}>

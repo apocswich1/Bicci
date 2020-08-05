@@ -63,32 +63,32 @@ const OrderInfo = props => {
       {...rest}
       className={clsx(classes.root, className)}
     >
-      <CardHeader title="Prowasher info" />
+      <CardHeader title="Driver info" />
       <Divider />
       <CardContent className={classes.content}>
       <Table>
           <TableBody>
             <TableRow>
               <TableCell>
-              <img src={washer.avatar} style={{borderRadius:"50%", width:"150px", height:"150px"}}/>
+              <img src={washer.driverAvatar} style={{borderRadius:"50%", width:"150px", height:"150px"}}/>
               </TableCell>
               <TableCell>
               <TableRow>
-              <TableCell>{t("name")}: {washer.name}</TableCell>
+              <TableCell>{t("name")}: {washer.driverName}</TableCell>
               </TableRow>
               <TableRow>
-              <TableCell>{t("email")}: {washer.email}</TableCell>
+              <TableCell>{t("email")}: {washer.driverEmail}</TableCell>
               </TableRow>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>id</TableCell>
-              <TableCell>{washer.id}</TableCell>
+              <TableCell>{washer.driverID}</TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
               <TableCell>{t("dni")}</TableCell>
               <TableCell>{washer.dni}</TableCell>
-            </TableRow>
+            </TableRow> */}
             {/* <TableRow>
               <TableCell>Washer Name</TableCell>
               <TableCell>{washer.name}</TableCell>
@@ -97,22 +97,22 @@ const OrderInfo = props => {
               <TableCell>Email</TableCell>
               <TableCell>{washer.email}</TableCell>
             </TableRow> */}
-            <TableRow>
+            {/* <TableRow>
               <TableCell>{t("language")}</TableCell>
               <TableCell>{new String(washer.language)}</TableCell>
-            </TableRow>
+            </TableRow> */}
             <TableRow>
               <TableCell>{t("phone")}</TableCell>
-              <TableCell>{washer.phone ? '+56 9 '+washer.phone : 'undefined'}</TableCell>
+              <TableCell>{washer.driverPhone ? '+56 9 '+washer.driverPhone : 'undefined'}</TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
               <TableCell>{t("Franchise name")}</TableCell>
               <TableCell>{washer.franchiseName ? washer.franchiseName : 'undefined'}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("Venue name")}</TableCell>
               <TableCell>{washer.venueName ? washer.venueName : 'undefined'}</TableCell>
-            </TableRow>
+            </TableRow> */}
           </TableBody>
         </Table>
       </CardContent>

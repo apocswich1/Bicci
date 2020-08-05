@@ -9,6 +9,9 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import firebase from 'utils/firebase';
 import { useSelector } from 'react-redux';
 import AuthGuard from '../../../src/components/AuthGuard/AuthGuard';
+import config from 'config';
+
+const service = config.servicio;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,7 +39,8 @@ const CouponManagementList = () => {
   const [vertical, setVertical] = React.useState('top');
   const [horizontal, setHorizontal] = React.useState('center');
   const [typeMessage, setTypeMessage] = React.useState('');
-  const [cboFranchises, setCboFranchises] = React.useState('');
+  const [cboRestaurants, setCboRestaurants] = React.useState('');
+  const [cboRegion, setCboRegion] = React.useState('');
 
   AuthGuard(session);
   
@@ -120,7 +124,7 @@ console.log(data);
     let usuarios = [];
     setLoading(true);
     const fetchCoupons = () => {
-      fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listCouponsAdmin', {
+      fetch(service+'listCouponsAdmin', {
         method: 'get',
         mode: 'cors',
       }).then(function (respuesta) {
@@ -136,17 +140,28 @@ console.log(data);
     };
 
     let franchises = [];
-    const cboFranchisesRef = firebase.firestore().collection("franchises").orderBy('name');
+    const cboRestaurantsRef = firebase.firestore().collection("restaurants").orderBy('name');
         //array de cbo de franquicias
-        cboFranchisesRef.get().then((snapshot)=>{
+        cboRestaurantsRef.get().then((snapshot)=>{
             snapshot.forEach(function(doc) {
                 franchises.push(doc.data());
         });
-        setCboFranchises(franchises);
+        setCboRestaurants(franchises);
         }).catch((error)=>{
         console.log("Error getting documents");     
         });
 
+        const fetchRegions = async () => {
+          try{
+            let refregions = await firebase.firestore().collection('zones').get();
+            let result = await refregions.docs.map(item => {return item.data()});
+            setCboRegion(result); 
+          }catch(error){
+            console.log(error);
+          }
+      };
+
+      fetchRegions();
     fetchCoupons();
 
     return () => {
@@ -161,7 +176,7 @@ console.log(data);
 
     console.log("Actualizando...");
     setLoading(true);
-      fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listCouponsAdmin', {
+      fetch(service+'listCouponsAdmin', {
         method: 'get',
         mode: 'cors',
       }).then(function (respuesta) {
@@ -267,7 +282,7 @@ console.log(data);
           {message}
         </Alert>
         </Snackbar>
-      <Header actualizar={actualizar} setLoading={setLoading} cboFranchises={cboFranchises}/>
+      <Header actualizar={actualizar} cboRegion={cboRegion} setLoading={setLoading} cboRestaurants={cboRestaurants}/>
       <SearchBar
         onFilter={handleFilter}
         onSearch={handleSearch}

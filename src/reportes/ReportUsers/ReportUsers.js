@@ -45,8 +45,8 @@ useEffect(() => {
             posts.push(doc.data());
           });
       //    console.log(posts)
-          setCustomers(posts);
-          setCustomersBkp(posts);
+          setCustomers(posts.filter(item => item.role !== "ADMIN"));
+          setCustomersBkp(posts.filter(item => item.role !== "ADMIN"));
           
         })
         .catch(err => {

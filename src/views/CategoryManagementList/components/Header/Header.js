@@ -55,7 +55,7 @@ const Header = props => {
           </Typography>
         </Grid>
         <Grid item>
-          {<ReportCategorys/>}
+          {/*<ReportCategorys/>*/}
           <Button
             color="primary"
             variant="contained"

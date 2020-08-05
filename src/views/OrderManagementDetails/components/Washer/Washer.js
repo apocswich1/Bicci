@@ -63,7 +63,7 @@ const Summary = props => {
         setOrder(orders[0]);
       }).catch(err => console.log(err));
 */
-      fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdminByOrderId', {
+    /*  fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/listOrdersAdminByOrderId', {
         method: 'post',
         mode: 'cors',
         body: JSON.stringify({ 'id':props.id }),
@@ -75,7 +75,15 @@ const Summary = props => {
         });
       }).catch(function (err) {
         console.log(err);
-      });
+      });*/
+      const refOrder = await firebase.firestore().collection('orders').doc(props.id).get();
+      const datos = await refOrder.data();
+      console.log(datos);
+      let uid = datos.userID;
+      let driverID = datos.driverID;
+      setOrder(datos);
+      // setUsuario(datos);
+      // setWasher(datos);
     };  
 
     fetchOrder();

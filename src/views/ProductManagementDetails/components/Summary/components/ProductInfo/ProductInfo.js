@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ProductInfo = props => {
-  const { product, className, actualizar,cboCategories, ...rest } = props;
+  const { product, className, actualizar,chips,chips2, cboCategories,cboRestaurants,cboIngredients, ...rest } = props;
 
   const classes = useStyles();
 
@@ -103,52 +103,32 @@ const ProductInfo = props => {
               <TableCell>{product.name}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t("category")}</TableCell>
-              <TableCell>{product.category}</TableCell>
+              <TableCell>{t("Restaurant")}</TableCell>
+              <TableCell>{product.restaurantName}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t("Presentation")}</TableCell>
-              <TableCell>{product.presentation}</TableCell>
+              <TableCell>{t("Description")}</TableCell>
+              <TableCell>{product.description}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t("Product Line")}</TableCell>
-              <TableCell>{product.productLine }</TableCell>
+              <TableCell>{t("Details")}</TableCell>
+              <TableCell>{product.details }</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t("concentration")}</TableCell>
-              <TableCell>{new String(product.concentration)}</TableCell>
+              <TableCell>{t("Instructions")}</TableCell>
+              <TableCell>{product.instructions}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t("composition")}</TableCell>
-              <TableCell>{new String(product.composition)}</TableCell>
+              <TableCell>{t("Estimated Delivery Time")}</TableCell>
+              <TableCell>{new String(product.estimatedDeliveryTime)}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>{t("deseases")}</TableCell>
-              <TableCell>{new String(product.deseases)}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t("Descripción")}</TableCell>
-              <TableCell>{new String(product.description)}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t("posology")}</TableCell>
-              <TableCell>{new String(product.posology)}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t("quantity")}</TableCell>
-              <TableCell>{new String(product.quantity)}</TableCell>
+              <TableCell>{t("stock")}</TableCell>
+              <TableCell>{new String(product.stock)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("sku")}</TableCell>
               <TableCell>{new String(product.sku)}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t("substance")}</TableCell>
-              <TableCell>{new String(product.substance)}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t("treatment")}</TableCell>
-              <TableCell>{new String(product.treatment != undefined ? product.treatment : 'No definido')}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("isactive")}</TableCell>
@@ -158,10 +138,10 @@ const ProductInfo = props => {
               <TableCell>{t("deleted")}</TableCell>
               <TableCell>{new String(product.deleted != undefined ? product.deleted : false)}</TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
               <TableCell>{t("promo")}</TableCell>
               <TableCell>{new String(product.promo != undefined ? product.promo : false)}</TableCell>
-            </TableRow>
+            </TableRow> */}
             {/*<TableRow>
               <TableCell>State/Region</TableCell>
               <TableCell>{product.state}</TableCell>
@@ -201,6 +181,10 @@ const ProductInfo = props => {
         onClose={handleEditClose}
         open={openEdit}
         cboCategories={cboCategories} 
+        cboIngredients={cboIngredients} 
+        cboRestaurants={cboRestaurants} 
+        chips={chips}
+        chips2={chips2}
       />
     </Card>
   );

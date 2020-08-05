@@ -24,11 +24,11 @@ import {
   TableRow,
   Typography
 } from '@material-ui/core';
-
-import firebase from 'utils/firebase';
+import tiempo from 'utils/tiempo';
 import getInitials from 'utils/getInitials';
 import { ReviewStars, GenericMoreButton, TableEditBarOrder } from 'components';
 import translate from 'translate';
+import DeliveryStatus from 'utils/DeliveryStatus';
 
 const t = translate;
 const useStyles = makeStyles(theme => ({
@@ -163,10 +163,12 @@ const Results = props => {
                       />
                     </TableCell>
                     <TableCell onClick={()=>sortData(orders,'name',sort)}>{t("Username")}</TableCell>
-                    <TableCell onClick={()=>sortData(orders,'washerName',sort)}>{t("Prowasher name")}</TableCell>
-                    <TableCell onClick={()=>sortData(orders,'franchiseName',sort)}>{t("Franchise name")}</TableCell>
-                    <TableCell onClick={()=>sortData(orders,'direction',sort)}>{t("direction")}</TableCell>
+                    <TableCell onClick={()=>sortData(orders,'driverName',sort)}>{t("Driver name")}</TableCell>
+                    <TableCell onClick={()=>sortData(orders,'placeName',sort)}>{t("Place name")}</TableCell>
+                    <TableCell onClick={()=>sortData(orders,'toAddress',sort)}>{t("direction")}</TableCell>
+                    <TableCell onClick={()=>sortData(orders,'orderID',sort)}>{t("ID")}</TableCell>
                     <TableCell onClick={()=>sortData(orders,'date',sort)}>{t("Date")}</TableCell>
+                    <TableCell onClick={()=>sortData(orders,'express',sort)}>{t("Tipo")}</TableCell>
                     <TableCell onClick={()=>sortData(orders,'status',sort)}>{t("Status")}</TableCell>
                     <TableCell align="right">{t("Actions")}</TableCell>
                   </TableRow>
@@ -195,7 +197,7 @@ const Results = props => {
                         <div className={classes.nameCell}>
                           <Avatar
                             className={classes.avatar}
-                            src={order.thumbnail}
+                            src={order.driverAvatar}
                           >
                             {getInitials(order.userName)}
                           </Avatar>
@@ -214,21 +216,14 @@ const Results = props => {
                         </div>
                       </TableCell>
                       {/* <TableCell>{(order.washerName != undefined) ? new String(order.description.substr(0,100))+'...' : 'No Definido'}</TableCell> */}
-                      <TableCell>{(order.washerName != undefined) ? new String(order.washerName) : 'No Definido'}</TableCell>
-                      <TableCell>{(order.franchiseName != undefined) ? new String(order.franchiseName) : 'No Definido'}</TableCell>
-                      <TableCell>{(order.address != undefined) ? new String(order.address) : 'No Definido'}</TableCell>
+                      <TableCell>{(order.driverName != undefined) ? new String(order.driverName) : 'No Definido'}</TableCell>
+                      <TableCell>{(order.placeName != undefined) ? new String(order.placeName) : 'No Definido'}</TableCell>
+                      <TableCell>{(order.toAddress != undefined) ? new String(order.toAddress) : 'No Definido'}</TableCell>
                       {/* <TableCell>{(order.date != undefined) ? new String(moment(order.date).format("DD/MM/YYYY")) : 'No Definido'}</TableCell> */}
-                      <TableCell>{new String(moment(new Date(order.serviceDate._seconds*1000)).format("DD/MM/YYYY"))}</TableCell>
-                      <TableCell>
-                        {order.status==1 && "Solicitado"}
-                        {order.status==2 && "Asignado"}
-                        {order.status==3 && "En camino"}
-                        {order.status==4 && "Llegado"}
-                        {order.status==5 && "Lavando"}
-                        {order.status==6 && "Lavado Finalizado"}
-                        {order.status==7 && "Cerrado"}
-                        {order.status==-1 && "Cancelado"}
-                       </TableCell>
+                      <TableCell>{order.id}</TableCell>
+                      <TableCell>{tiempo.fecha(order.date)}</TableCell>
+                      <TableCell>{order.express ? "Express" : "Food"}</TableCell>
+                      <TableCell>{DeliveryStatus(order.status)}</TableCell>
                     {/*}  <TableCell>
                         <ReviewStars value={5} />
                         </TableCell>*/}

@@ -14,6 +14,7 @@ import NotInterestedIcon from '@material-ui/icons/NotInterested';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import translate from 'translate';
+import firebase from 'utils/firebase';
 
 const t = translate;
 const useStyles = makeStyles(theme => ({
@@ -79,22 +80,41 @@ const OtherActions = props => {
         });
     }
 
-    const deleteAccount = ()=>{
+    const deleteAccount = async ()=>{
       let params = { "id":orderId }
-      let msg = "Orden borrada exitosamente!";
-      console.log(params);  
-        fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/orderDeleteAdmin', {
-            method: 'post',
-            mode: 'cors',
-            body: JSON.stringify(params)
-          }).then(function (respuesta) {
-            respuesta.json().then(body => {
-              console.log(body);
-              actualizar(msg,body);
-            });
-          }).catch(function (err) {
-            // Error :(
-          });
+      let msg = "Orden cancelada exitosamente!";
+      try {
+        await firebase.firestore().collection('orders').doc(orderId).set({status:-1},{merge:true});
+        let body = {
+          code: 200,
+          message: "Orden cancelada exitosamente!",
+          id:orderId
+        };
+        actualizar(msg,body);
+        console.log("Cancelada con exito");  
+      } catch (error) {
+        let body = {
+          code: 200,
+          message: error,
+          id:orderId
+        };
+        actualizar(msg,body);
+        console.log("Error: "+error);  
+      }
+      
+      
+        // fetch('https://us-central1-prowashgo-firebase.cloudfunctions.net/orderDeleteAdmin', {
+        //     method: 'post',
+        //     mode: 'cors',
+        //     body: JSON.stringify(params)
+        //   }).then(function (respuesta) {
+        //     respuesta.json().then(body => {
+        //       console.log(body);
+        //       actualizar(msg,body);
+        //     });
+        //   }).catch(function (err) {
+        //     // Error :(
+        //   });
       }
   
   return (
@@ -117,10 +137,10 @@ const OtherActions = props => {
             Enable Order Account
           </Button>
           )} */}
-          <Button>
+          {/* <Button>
             <GetAppIcon className={classes.buttonIcon} />
             {t("Export")} {t("data")}
-          </Button>
+          </Button> */}
         </div>
         <Typography
           className={classes.notice}
@@ -131,8 +151,12 @@ const OtherActions = props => {
         </Typography>
         <Button className={classes.deleteButton} onClick={deleteAccount}>
           <DeleteIcon className={classes.buttonIcon} />
-          {t("delete")} Order
+          {t("Cancelar")} Orden
         </Button>
+        {/* <Button className={classes.deleteButton} onClick={deleteAccount}>
+          <DeleteIcon className={classes.buttonIcon} />
+          {t("delete")} Orden
+        </Button> */}
       </CardContent>
     </Card>
   );

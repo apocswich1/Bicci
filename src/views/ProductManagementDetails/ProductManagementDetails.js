@@ -25,8 +25,9 @@ const useStyles = makeStyles(theme => ({
 const ProductManagementDetails = props => {
   const { match, history } = props;
   const classes = useStyles();
-  const { id, tab } = match.params;
+  const { id, tab, idrestaurant } = match.params;
 
+  console.log(match.params);
   const handleTabsChange = (event, value) => {
     history.push(value);
   };
@@ -40,7 +41,7 @@ const ProductManagementDetails = props => {
   ];
 
   if (!tab) {
-    return <Redirect to={`/management/products/${id}/summary`} />;
+    return <Redirect to={`/management/products/${id}/${idrestaurant}/summary`} />;
   }
 
   if (!tabs.find(t => t.value === tab)) {
@@ -70,7 +71,7 @@ const ProductManagementDetails = props => {
       </Tabs>
       <Divider className={classes.divider} />
       <div className={classes.content}>
-        {tab === 'summary' && <Summary id={id}/>}
+        {tab === 'summary' && <Summary id={id} idrestaurant={idrestaurant}/>}
         {tab === 'invoices' && <Invoices id={id}/>}
         {tab === 'logs' && <Logs id={id}/>}
       </div>

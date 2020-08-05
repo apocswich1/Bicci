@@ -121,7 +121,7 @@ const CustomerInfo = props => {
             </TableRow> */}
             <TableRow>
               <TableCell>{t("phone")}</TableCell>
-              <TableCell>{customer.phone ? '+56 9 '+customer.phone : 'undefined'}</TableCell>
+              <TableCell>{customer.phone ? customer.phone : 'undefined'}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Id Usuario</TableCell>

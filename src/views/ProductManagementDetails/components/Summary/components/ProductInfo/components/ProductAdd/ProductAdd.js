@@ -18,6 +18,9 @@ import { FilesDropzone } from 'components';
 import { FilesDropzoneFile } from 'components';
 import { FilesDropzonePromo } from 'components';
 import InputLabel from '@material-ui/core/InputLabel';
+import Chip from '@material-ui/core/Chip';
+import Paper from '@material-ui/core/Paper';
+import TagFacesIcon from '@material-ui/icons/TagFaces';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -42,6 +45,17 @@ const useStyles = makeStyles(theme => ({
     overflowY: 'auto',
     maxWidth: '100%'
   },
+  roote: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    listStyle: 'none',
+    padding: theme.spacing(0.5),
+    margin: 0,
+  },
+  chip: {
+    margin: theme.spacing(0.5),
+  },
   container: {
     marginTop: theme.spacing(3)
   },
@@ -58,13 +72,17 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ProductAdd = props => {
-  const { open, onClose, product, actualizar, setLoading, className, cboCategories, ...rest } = props;
+  const { open, onClose, product, actualizar, setLoading,cboIngredients,cboRestaurants, chips, className, cboCategories, ...rest } = props;
 
   const classes = useStyles();
 
   const [filess, setFiless] = useState([]);
   const [filessdoc, setFilessdoc] = useState([]);
   const [filesspromo, setFilesspromo] = useState([]);
+  const [places, setPlaces] = useState([]);
+  const [chipData, setChipData] = useState([]);
+  const [places2, setPlaces2] = useState([]);
+  const [chipData2, setChipData2] = useState([]);
   const [formState, setFormState] = useState({
     ...product
   });
@@ -74,12 +92,58 @@ const ProductAdd = props => {
     return null;
   }
 
+  const handleChangeIngredient = async event => {
+    event.persist();
+        setFormState(formState => ({
+          ...formState,
+          'ingredientID':event.target.value,
+          'ingredientName':event._targetInst.memoizedProps.children[0][0],
+          'places': [...places, event.target.value]
+        }));
+    
+        setChipData(
+          chipData => [...chipData,{key: event.target.value, label: event._targetInst.memoizedProps.children[0][0]}]
+          );
+    
+        setPlaces(
+            places => [...places, event.target.value]
+        );
+    
+  }
+
   const handleChangeCategory = async event => {
     event.persist();
         setFormState(formState => ({
           ...formState,
           'categoryID':event.target.value,
           'categoryName':event._targetInst.memoizedProps.children[0][0],
+          'places2': [...places2, event.target.value]
+        }));
+    
+        setChipData2(
+          chipData2 => [...chipData2,{key: event.target.value, label: event._targetInst.memoizedProps.children[0][0]}]
+          );
+    
+        setPlaces2(
+            places2 => [...places2, event.target.value]
+        );
+    
+  }
+
+  const handleDelete = (chipToDelete) => () => {
+    setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
+  };
+
+  const handleDelete2 = (chipToDelete) => () => {
+    setChipData2((chips2) => chips2.filter((chip2) => chip2.key !== chipToDelete.key));
+  };
+
+  const handleChangeRestaurant = async event => {
+    event.persist();
+        setFormState(formState => ({
+          ...formState,
+          'restaurantID':event.target.value,
+          'restaurantName':event._targetInst.memoizedProps.children[0][0],
         }));      
     
   
@@ -88,37 +152,26 @@ const ProductAdd = props => {
 
   const validateForm = () => {
     let nameError = "";
-    let actionError = "";
-    let categoryError = "";
-    let brandError = "";
-    let compositionError = "";
+    let instructionsError = "";
+    let restaurantError = "";
     let concentrationError = "";
     let descriptionError = "";
-    let deseasesError = "";
-    let posologyError = "";
-    let presentationError = "";
-    let productLineError = "";
+    let priceError = "";
+    let estimatedDeliveryTimeError = "";
     let promoError = "";
-    let quantityError = "";
+    let stockError = "";
     let skuError = "";
-    let substanceError = "";
-    let treatmentError = "";
+    let detailsError = "";
     let nameErrorMessage = "";
-    let actionErrorMessage = "";
-    let categoryErrorMessage = "";
-    let brandErrorMessage = "";
-    let compositionErrorMessage = "";
-    let concentrationErrorMessage = "";
+    let instructionsErrorMessage = "";
+    let restaurantErrorMessage = "";
     let descriptionErrorMessage = "";
-    let deseasesErrorMessage = "";
-    let posologyErrorMessage = "";
-    let presentationErrorMessage = "";
-    let productLineErrorMessage = "";
+    let priceErrorMessage = "";
+    let estimatedDeliveryTimeErrorMessage = "";
     let promoErrorMessage = "";
-    let quantityErrorMessage = "";
+    let stockErrorMessage = "";
     let skuErrorMessage = "";
-    let substanceErrorMessage = "";
-    let treatmentErrorMessage = "";
+    let detailsErrorMessage = "";
 
     
     if(!formState.name){
@@ -126,15 +179,40 @@ const ProductAdd = props => {
       nameErrorMessage = "Debe introducir un nombre";
     }
 
-    if(!formState.action){
-      actionError = "Debe introducir el action";
-      actionErrorMessage = "Debe introducir el action";
+    if(!formState.instructions){
+      instructionsError = "Debe introducir el instructions";
+      instructionsErrorMessage = "Debe introducir el instructions";
     }
 
-    if(!formState.categoryID){
-      categoryError = "Debe introducir l categoria";
-      categoryErrorMessage = "Debe introducir la categoria";
+    if(!formState.description){
+      descriptionError = "Debe introducir la description";
+      descriptionErrorMessage = "Debe introducir la description";
     }
+
+    if(!formState.price){
+      priceError = "Debe introducir la price";
+      priceErrorMessage = "Debe introducir la price";
+    }
+
+    // if(!formState.estimatedDeliverTime){
+    //   estimatedDeliveryTimeError = "Debe introducir la estimatedDeliveryTime";
+    //   estimatedDeliveryTimeErrorMessage = "Debe introducir la estimatedDeliveryTime";
+    // }
+    
+    if(!formState.estimatedDeliveryTime){
+      estimatedDeliveryTimeError = "Debe introducir estimatedDeliveryTime";
+      estimatedDeliveryTimeErrorMessage = "Debe introducir estimatedDeliveryTime";
+    }
+
+    // if(!formState.presentation){
+    //   presentationError = "Debe introducir la posología";
+    //   presentationErrorMessage = "Debe introducir la posología";
+    // }
+
+    // if(!formState.restaurantID){
+    //   restaurantError = "Debe introducir l categoria";
+    //   restaurantErrorMessage = "Debe introducir la categoria";
+    // }
 
     // if(!formState.brand){
     //   brandError = "Debe introducir la marca";
@@ -151,70 +229,45 @@ const ProductAdd = props => {
     //   concentrationErrorMessage = "Debe introducir la concentration";
     // }
 
-    if(!formState.description){
-      descriptionError = "Debe introducir la description";
-      descriptionErrorMessage = "Debe introducir la description";
-    }
-
-    // if(!formState.deseases){
-    //   deseasesError = "Debe introducir deseases";
-    //   deseasesErrorMessage = "Debe introducir deseases";
-    // }
-
-    if(!formState.posology){
-      posologyError = "Debe introducir la posología";
-      posologyErrorMessage = "Debe introducir la posología";
-    }
-
-    if(!formState.presentation){
-      presentationError = "Debe introducir la posología";
-      presentationErrorMessage = "Debe introducir la posología";
-    }
-
-    // if(!formState.productLine){
-    //   productLineError = "Debe introducir la productLine";
-    //   productLineErrorMessage = "Debe introducir la productLine";
-    // }
-
     // if(!formState.promo){
     //   promoError = "Debe introducir si es promo";
     //   promoErrorMessage = "Debe introducir si es promo";
     // }
 
-    // if(!formState.quantity){
-    //   quantityError = "Debe introducir la cantidad";
-    //   quantityErrorMessage = "Debe introducir la cantidad";
-    // }
-
-    // if(!formState.sku){
-    //   skuError = "Debe introducir el sku";
-    //   skuErrorMessage = "Debe introducir el sku";
-    // }
-
-    if(!formState.substance){
-      substanceError = "Debe introducir la substance";
-      substanceErrorMessage = "Debe introducir la substance";
+    if(!formState.stock){
+      stockError = "Debe introducir la cantidad";
+      stockErrorMessage = "Debe introducir la cantidad";
     }
 
-    // if(!formState.treatment){
-    //   treatmentError = "Debe introducir el treatment";
-    //   treatmentErrorMessage = "Debe introducir treatment";
+    if(!formState.sku){
+      skuError = "Debe introducir el sku";
+      skuErrorMessage = "Debe introducir el sku";
+    }
+
+    // if(!formState.substance){
+    //   substanceError = "Debe introducir la substance";
+    //   substanceErrorMessage = "Debe introducir la substance";
     // }
 
-    if(!formState.presentation){
-      presentationError = "Debe introducir la presentación";
-      presentationErrorMessage = "Debe introducir la presentación";
+    if(!formState.details){
+      detailsError = "Debe introducir el details";
+      detailsErrorMessage = "Debe introducir details";
     }
+
+    // if(!formState.presentation){
+    //   presentationError = "Debe introducir la presentación";
+    //   presentationErrorMessage = "Debe introducir la presentación";
+    // }
 
     
 
-    if(nameError || actionError || categoryError || brandError || compositionError || concentrationError || descriptionError || deseasesError || skuError || productLineError || quantityError || substanceError || presentationError){
+    if(nameError || descriptionError || estimatedDeliveryTimeError || stockError){
       
       setFormState(formState => ({
         ...formState,
-        nameError,actionError,categoryError,brandError,compositionError,concentrationError,descriptionError,deseasesError,skuError,productLineError,quantityError,substanceError,
-        nameErrorMessage,actionErrorMessage,categoryErrorMessage,brandErrorMessage,compositionErrorMessage,concentrationErrorMessage,descriptionErrorMessage,deseasesErrorMessage,skuErrorMessage,
-        posologyError,posologyErrorMessage,treatmentError,treatmentErrorMessage,presentationError,presentationErrorMessage,productLineErrorMessage,quantityErrorMessage,substanceErrorMessage
+        nameError,descriptionError,estimatedDeliveryTimeError,stockError,
+        nameErrorMessage,descriptionErrorMessage,
+        priceError,priceErrorMessage,estimatedDeliveryTimeErrorMessage,stockErrorMessage
       }));
       console.log(formState);
       return false;
@@ -235,34 +288,31 @@ const ProductAdd = props => {
 
   const handleSave = (event) => {
     event.preventDefault();
-    console.log(formState);
-    let msg = "Products creado con exito";
+    //console.log(formState);
+    let msg = "Producto creado con exito";
     const isValid = validateForm();
-    console.log(isValid);
+   // console.log(isValid);
     if(isValid){
       setLoading(true);
       let params = {
         name: formState.name,
-        promo: formState.promo ? formState.promo : false,
-        active: formState.active ? formState.active : true,
-        brand: formState.brand ? formState.brand : "",
-        //category:formState.category,
-        //categoryID:1,
-        categoryID: formState.categoryID,
-        category: formState.categoryName,
-        composition: formState.composition ? formState.composition : "",
-        concentration:formState.concentration ? formState.concentration : "",
-        action:formState.action ? formState.action : "",
+        //active: formState.active ? formState.active : true,
+        active: false,
+        restaurantID: formState.restaurantID,
+        restaurant: formState.restaurantName,
+        instructions:formState.instructions ? formState.instructions : "",
         description:formState.description ? formState.description : "",
-        deseases:formState.deseases ? formState.deseases : "",
-        posology:formState.posology ? formState.posology : "",
-        presentation:formState.presentation ? formState.presentation : "",
-        productLine:formState.productLine ? formState.productLine : "",
-        quantity:formState.quantity ? formState.quantity : "",
+        estimatedDeliveryTime:formState.estimatedDeliveryTime ? +formState.estimatedDeliveryTime : 0,
+        stock:formState.stock ? +formState.stock : 0,
         sku:formState.sku ? formState.sku : "",
-        substance:formState.substance ? formState.substance : "",
-        treatment:formState.treatment ? formState.treatment : ""
+        price:formState.price ? +formState.price : 0,
+        details:formState.details ? formState.details : "",
+        aditionalIngredients:chipData.map((item) => {return item.key}),
+        categoriesInvolved:chipData2.map((item) => {return item.key}),
       }
+
+      console.log(params);
+    //  return;
 
       fetch(service+'createProductsAdmin', {
           method: 'post',
@@ -303,66 +353,66 @@ const ProductAdd = props => {
               }
                    /************* */
                       /************* documento de producto*/
-            if(filessdoc.length > 0){
-              var storageReference = firebase.storage().ref();
-             var uploadDocument = storageReference.child(`/principalDocs/${body.id}/${body.id}.pdf`).put(filessdoc[0]);
-             uploadDocument.on('state_changed', function (snapshot) {
-               var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-               console.log('Upload is ' + progress + '% done');
-               switch (snapshot.state) {
-                 case firebase.storage.TaskState.PAUSED: // or 'paused'
-                   //  console.log('Upload is paused');
-                   break;
-                 case firebase.storage.TaskState.RUNNING: // or 'running'
-                   //  console.log('Upload is running');
-                   break;
-               }
-             }, function (error) {
+            // if(filessdoc.length > 0){
+            //   var storageReference = firebase.storage().ref();
+            //  var uploadDocument = storageReference.child(`/principalDocs/${body.id}/${body.id}.pdf`).put(filessdoc[0]);
+            //  uploadDocument.on('state_changed', function (snapshot) {
+            //    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            //    console.log('Upload is ' + progress + '% done');
+            //    switch (snapshot.state) {
+            //      case firebase.storage.TaskState.PAUSED: // or 'paused'
+            //        //  console.log('Upload is paused');
+            //        break;
+            //      case firebase.storage.TaskState.RUNNING: // or 'running'
+            //        //  console.log('Upload is running');
+            //        break;
+            //    }
+            //  }, function (error) {
      
-             }, function () {
-               uploadDoc.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-                 let document = "principalDoc";
-                 let datadoc = {}
-                 datadoc[document] = downloadURL;
-                 console.log(datadoc);
-                const refPro = firebase.firestore().collection('products').doc(body.id);
-                  refPro.set(datadoc, { merge: true }).then(async resp => {
-                    console.log("Congrats...");
-                  }).catch(err => console.log(err));
-               }).catch(err => console.log(err));
-             });
-             }
+            //  }, function () {
+            //    uploadDoc.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+            //      let document = "principalDoc";
+            //      let datadoc = {}
+            //      datadoc[document] = downloadURL;
+            //      console.log(datadoc);
+            //     const refPro = firebase.firestore().collection('products').doc(body.id);
+            //       refPro.set(datadoc, { merge: true }).then(async resp => {
+            //         console.log("Congrats...");
+            //       }).catch(err => console.log(err));
+            //    }).catch(err => console.log(err));
+            //  });
+            //  }
             /************* */
              /*************agragar foto promo*/
-             if(filesspromo[0]!==undefined){
+            //  if(filesspromo[0]!==undefined){
 
-              var storageRef = firebase.storage().ref();
-              var uploadDoc = storageRef.child(`/thumbnails_product_promo/${body.id}/${body.id}.jpg`).put(filesspromo[0]);
-              uploadDoc.on('state_changed', function (snapshot) {
-                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Upload is ' + progress + '% done');
-                switch (snapshot.state) {
-                  case firebase.storage.TaskState.PAUSED: // or 'paused'
-                    break;
-                  case firebase.storage.TaskState.RUNNING: // or 'running'
-                    break;
-                }
-              }, function (error) {
+            //   var storageRef = firebase.storage().ref();
+            //   var uploadDoc = storageRef.child(`/thumbnails_product_promo/${body.id}/${body.id}.jpg`).put(filesspromo[0]);
+            //   uploadDoc.on('state_changed', function (snapshot) {
+            //     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            //     console.log('Upload is ' + progress + '% done');
+            //     switch (snapshot.state) {
+            //       case firebase.storage.TaskState.PAUSED: // or 'paused'
+            //         break;
+            //       case firebase.storage.TaskState.RUNNING: // or 'running'
+            //         break;
+            //     }
+            //   }, function (error) {
       
-              }, function () {
-                uploadDoc.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-                  let document = "promoThumb";
-                  let data = {}
-                  data[document] = downloadURL;
-                  console.log(data);
-                 const refWasher = firebase.firestore().collection('products').doc(body.id);
-                   refWasher.set(data, { merge: true }).then(async resp => {
-                     console.log("Congrats...");
-                   }).catch(err => console.log(err));
-                }).catch(err => console.log(err));
-              });
+            //   }, function () {
+            //     uploadDoc.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+            //       let document = "promoThumb";
+            //       let data = {}
+            //       data[document] = downloadURL;
+            //       console.log(data);
+            //      const refWasher = firebase.firestore().collection('products').doc(body.id);
+            //        refWasher.set(data, { merge: true }).then(async resp => {
+            //          console.log("Congrats...");
+            //        }).catch(err => console.log(err));
+            //     }).catch(err => console.log(err));
+            //   });
              
-             }
+            //  }
                   /************* */
             actualizar(msg,body);
             });
@@ -395,6 +445,13 @@ const ProductAdd = props => {
             >
               {T('Agregar')} {T('Product')}
             </Typography>
+            <Typography
+              align="center"
+              gutterBottom
+              variant="h5"
+            >
+            Recomendación imagen: 720x240px, Formato JPEG, PNG. Máximo 2MB
+            </Typography>
             <Grid
               className={classes.container}
               container
@@ -411,7 +468,7 @@ const ProductAdd = props => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid
+              {/* <Grid
                 item
                 md={12}
                 xs={12}
@@ -421,10 +478,10 @@ const ProductAdd = props => {
                     <FilesDropzoneFile handleFieldChange={handleFieldChange} setFilessdoc={setFilessdoc} />
                   </CardContent>
                 </Card>
-              </Grid>
+              </Grid> */}
               <Grid
                 item
-                md={6}
+                md={12}
                 xs={12}
               >
                 <TextField
@@ -438,40 +495,56 @@ const ProductAdd = props => {
                   helperText={formState.nameErrorMessage}
                 />
               </Grid>
-              {/* <Grid
+              <Grid
                 item
                 md={6}
                 xs={12}
               >
                 <TextField
                   fullWidth
-                  label={T("Category")}
-                  name="category"
+                  label={T("Price")}
+                  name="price"
                   onChange={handleFieldChange}
-                  value={formState.category}
+                  value={formState.price}
                   variant="outlined"
-                  error={formState.categoryError}
-                  helperText={formState.categoryErrorMessage}
+                  error={formState.priceError}
+                  helperText={formState.priceErrorMessage}
                 />
-              </Grid> */}
+              </Grid>
+              <Grid
+                item
+                md={6}
+                xs={12}
+              >
+                <TextField
+                  fullWidth
+                  label={T("Estimated Delivery Time")}
+                  name="estimatedDeliveryTime"
+                  onChange={handleFieldChange}
+                  value={formState.estimatedDeliveryTime}
+                  variant="outlined"
+                  error={formState.estimatedDeliveryTimeError}
+                  helperText={formState.estimatedDeliveryTimeErrorMessage}
+                />
+              </Grid>
                 <Grid
                 item
                 md={12}
                 xs={12}
               >
-                <InputLabel id="demo-simple-select-label">{T("Category")}</InputLabel>
+                <InputLabel id="demo-simple-select-label">{T("Restaurant")}</InputLabel>
                 <Select
-                  name="category"
-                  value={formState.categoryID}
-                  onChange={handleChangeCategory}
+                  name="restaurant"
+                  value={formState.restaurantID}
+                  onChange={handleChangeRestaurant}
                   style={{ width: "520px" }}
-                  error={formState.categoryError}
-                  helperText={formState.categoryErrorMessage}
+                  error={formState.restaurantError}
+                  helperText={formState.restaurantErrorMessage}
                 >
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  {cboCategories.map(item => (
+                  {cboRestaurants.map(item => (
                     <MenuItem value={item.id}>{item.name}</MenuItem>
                   ))}
                 </Select>
@@ -483,115 +556,16 @@ const ProductAdd = props => {
               >
                 <TextField
                   fullWidth
-                  label={T("presentation")}
-                  name="presentation"
+                  label={T("Stock")}
+                  name="stock"
                   onChange={handleFieldChange}
-                  value={formState.presentation}
+                  value={formState.stock}
                   variant="outlined"
-                  error={formState.presentationError}
-                  helperText={formState.presentationErrorMessage}
+                  error={formState.stockError}
+                  helperText={formState.stockErrorMessage}
                 />
               </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
-                <TextField
-                  fullWidth
-                  label={T("Product Line")}
-                  name="productLine"
-                  onChange={handleFieldChange}
-                  value={formState.productLine}
-                  variant="outlined"
-                  error={formState.productLineError}
-                  helperText={formState.productLineErrorMessage}
-                  // InputProps={{
-                  //   startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
-                  // }}
-                />
-              </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
-                <TextField
-                  fullWidth
-                  label={T("Concentration")}
-                  name="concentration"
-                  onChange={handleFieldChange}
-                  value={formState.concentration}
-                  variant="outlined"
-                  error={formState.concentrationError}
-                  helperText={formState.concentrationErrorMessage}
-                />
-              </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
-                <TextField
-                  fullWidth
-                  label={T("Composition")}
-                  name="composition"
-                  onChange={handleFieldChange}
-                  value={formState.composition}
-                  variant="outlined"
-                  error={formState.compositionError}
-                  helperText={formState.compositionErrorMessage}
-                />
-              </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
-                <TextField
-                  fullWidth
-                  label={T("Deseases")}
-                  name="deseases"
-                  onChange={handleFieldChange}
-                  value={formState.deseases}
-                  variant="outlined"
-                  error={formState.deseasesError}
-                  helperText={formState.deseasesErrorMessage}
-                />
-              </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
-                <TextField
-                  fullWidth
-                  label={T("Treatment")}
-                  name="treatment"
-                  onChange={handleFieldChange}
-                  value={formState.treatment}
-                  variant="outlined"
-                  error={formState.treatmentError}
-                  helperText={formState.treatmentErrorMessage}
-                />
-              </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
-              >
-                <TextField
-                  fullWidth
-                  label={T("Quantity")}
-                  name="quantity"
-                  onChange={handleFieldChange}
-                  value={formState.quantity}
-                  variant="outlined"
-                  error={formState.quantityError}
-                  helperText={formState.quantityErrorMessage}
-                />
-              </Grid>
-              <Grid
+              {/* <Grid
                 item
                 md={6}
                 xs={12}
@@ -606,71 +580,39 @@ const ProductAdd = props => {
                   error={formState.skuError}
                   helperText={formState.skuErrorMessage}
                 />
-              </Grid>
-              <Grid
-                item
-                md={6}
-                xs={6}
-              >
-                <TextField
-                  fullWidth
-                  label={T("brand")}
-                  name="brand"
-                  onChange={handleFieldChange}
-                  value={formState.brand}
-                  variant="outlined"
-                  error={formState.brandError}
-                  helperText={formState.brandErrorMessage}
-                />
-              </Grid>
-              <Grid
+              </Grid> */}
+              {/* <Grid
                 item
                 md={12}
                 xs={12}
               >
                 <TextField
                   fullWidth
-                  label={T("substance")}
-                  name="substance"
+                  label={T("Instructions")}
+                  name="instructions"
                   onChange={handleFieldChange}
-                  value={formState.substance}
+                  value={formState.instructions}
                   variant="outlined"
-                  error={formState.substanceError}
-                  helperText={formState.substanceErrorMessage}
+                  error={formState.instructionsError}
+                  helperText={formState.instructionsErrorMessage}
                 />
-              </Grid>
-              <Grid
+              </Grid> */}
+              {/* <Grid
                 item
                 md={12}
                 xs={12}
               >
                 <TextField
                   fullWidth
-                  label={T("action")}
-                  name="action"
+                  label={T("Details")}
+                  name="details"
                   onChange={handleFieldChange}
-                  value={formState.action}
+                  value={formState.details}
                   variant="outlined"
-                  error={formState.actionError}
-                  helperText={formState.actionErrorMessage}
+                  error={formState.detailsError}
+                  helperText={formState.detailsErrorMessage}
                 />
-              </Grid>
-              <Grid
-                item
-                md={12}
-                xs={12}
-              >
-                <TextField
-                  fullWidth
-                  label={T("posology")}
-                  name="posology"
-                  onChange={handleFieldChange}
-                  value={formState.posology}
-                  variant="outlined"
-                  error={formState.posologyError}
-                  helperText={formState.posologyErrorMessage}
-                />
-              </Grid>
+              </Grid> */}
               <Grid
                 item
                 md={12}
@@ -687,7 +629,7 @@ const ProductAdd = props => {
                   helperText={formState.descriptionErrorMessage}
                 />
               </Grid>
-              <Grid
+              {/* <Grid
                 item
                 md={6}
                 xs={6}
@@ -701,6 +643,100 @@ const ProductAdd = props => {
                   onChange={handleFieldChange}
                   value={formState.promo}
                 />
+              </Grid> */}
+              <Grid
+                item
+                md={12}
+                xs={12}
+              >
+                    <Paper component="ul" className={classes.roote}>
+                {chipData.map((data) => {
+                  let icon;
+
+                  if (data.label === 'React') {
+                    icon = <TagFacesIcon />;
+                  }
+
+                  return (
+                    <li key={data.key}>
+                      <Chip
+                        icon={icon}
+                        label={data.label}
+                        onDelete={data.label === 'React' ? undefined : handleDelete(data)}
+                        className={classes.chip}
+                      />
+                    </li>
+                  );
+                })}
+                </Paper>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+                hidden={formState.global ? true : false }
+              >
+                <InputLabel id="demo-simple-select-label">{T("Ingredients")}</InputLabel>
+                <Select
+                  name="ingredientName"
+                  value={formState.ingredientID}
+                  onChange={handleChangeIngredient}
+                  style={{ width: "520px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {cboIngredients.map(item => (
+                    <MenuItem value={item.id}>{item.name}</MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+              >
+                    <Paper component="ul" className={classes.roote}>
+                {chipData2.map((data) => {
+                  let icon;
+
+                  if (data.label === 'React') {
+                    icon = <TagFacesIcon />;
+                  }
+
+                  return (
+                    <li key={data.key}>
+                      <Chip
+                        icon={icon}
+                        label={data.label}
+                        onDelete={data.label === 'React' ? undefined : handleDelete2(data)}
+                        className={classes.chip}
+                      />
+                    </li>
+                  );
+                })}
+                </Paper>
+              </Grid>
+              <Grid
+                item
+                md={12}
+                xs={12}
+                hidden={formState.global ? true : false }
+              >
+                <InputLabel id="demo-simple-select-label">{T("Categories")}</InputLabel>
+                <Select
+                  name="categoryName"
+                  value={formState.categoryID}
+                  onChange={handleChangeCategory}
+                  style={{ width: "520px" }}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {cboCategories.map(item => (
+                    <MenuItem value={item.id}>{item.name}</MenuItem>
+                  ))}
+                </Select>
               </Grid>
               <Grid
                 item
@@ -717,7 +753,7 @@ const ProductAdd = props => {
                   value={formState.active}
                 />
               </Grid>
-              {formState.promo && (
+              {/* {formState.promo && (
                  <Grid
                  item
                  md={12}
@@ -729,7 +765,7 @@ const ProductAdd = props => {
                    </CardContent>
                  </Card>
                </Grid>
-              )}
+              )} */}
             </Grid>
           </CardContent>
           <CardActions className={classes.actions}>

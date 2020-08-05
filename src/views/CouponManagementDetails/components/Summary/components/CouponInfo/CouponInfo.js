@@ -22,6 +22,7 @@ import moment from 'moment';
 import { Label } from 'components';
 import { CouponEdit } from './components';
 import translate from 'translate';
+import tiempo from 'utils/tiempo';
 
 const t = translate;
 const useStyles = makeStyles(theme => ({
@@ -42,7 +43,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CouponInfo = props => {
-  const { coupon, className, actualizar, cboFranchises, ...rest } = props;
+  const { coupon, chips, className, actualizar,cboRegion, cboRestaurants, ...rest } = props;
 
   const classes = useStyles();
 
@@ -87,15 +88,24 @@ const CouponInfo = props => {
               <TableCell>{t("global")}</TableCell>
               <TableCell>{new String(coupon.global != undefined ? coupon.global : true)}</TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
               <TableCell>{t("discount")}</TableCell>
               <TableCell>{new String(coupon.discount != undefined ? coupon.discount : 'No aplica')}</TableCell>
+            </TableRow> */}
+            <TableRow>
+              <TableCell>{t("Stock")}</TableCell>
+              <TableCell>{new String(coupon.stock != undefined ? coupon.stock : 0)}</TableCell>
             </TableRow>
-            {/*<TableRow>
-              <TableCell>State/Region</TableCell>
-              <TableCell>{coupon.state}</TableCell>
+            <TableRow>
+              <TableCell>{t("timesPerUser")}</TableCell>
+              <TableCell>{new String(coupon.timesPerUser !== undefined ? coupon.timesPerUser : 0)}</TableCell>
             </TableRow>
-            <TableRow selected>
+            <TableRow>
+              <TableCell>Expiration Date</TableCell>
+              <TableCell>{tiempo.fechayhora(coupon.expirationDate)}</TableCell>
+            </TableRow>
+            
+            {/*<TableRow selected>
               <TableCell>Country</TableCell>
               <TableCell>{coupon.country}</TableCell>
             </TableRow>
@@ -126,10 +136,12 @@ const CouponInfo = props => {
       </CardActions>
       <CouponEdit
         coupon={coupon}
+        chips={chips}
         actualizar={actualizar}
         onClose={handleEditClose}
         open={openEdit}
-        cboFranchises={cboFranchises}
+        cboRestaurants={cboRestaurants}
+        cboRegion={cboRegion}
       />
     </Card>
   );

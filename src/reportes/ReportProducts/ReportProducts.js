@@ -63,10 +63,16 @@ useEffect(() => {
             <ExcelFile element={<button style={{backgroundColor:colors.blue['600'],color:"#ffffff", marginRight:"10px"}} class="MuiButtonBase-root MuiButton-root makeStyles-deleteButton-456 MuiButton-text">Exportar {t("products")}</button>}>
                 <ExcelSheet data={customers} name="Products">
                     <ExcelColumn label="Name" value="name"/>
-                    <ExcelColumn label="Email" value="email"/>
-                    <ExcelColumn label="isActive" value={(col) => new String(col.isActive)}/>
-                    <ExcelColumn label="language" value="language"/>
-                    <ExcelColumn label="phone" value="phone"/>
+                    <ExcelColumn label="id" value="id"/>
+                    <ExcelColumn label="isActive" value={(col) => new String(col.active)}/>
+                    <ExcelColumn label="price" value="price"/>
+                    <ExcelColumn label="sku" value="sku"/>
+                    <ExcelColumn label="details" value="details"/>
+                    <ExcelColumn label="description" value="description"/>
+                    <ExcelColumn label="instructions" value="instructions"/>
+                    <ExcelColumn label="stock" value="stock"/>
+                    <ExcelColumn label="estimated Delivery Time" value="estimatedDeliveryTime"/>
+                    <ExcelColumn label="restaurant" value="restaurantName"/>
                 </ExcelSheet>
             </ExcelFile>
         );

@@ -121,7 +121,7 @@ const DriverInfo = props => {
             </TableRow> */}
             <TableRow>
               <TableCell>{t("phone")}</TableCell>
-              <TableCell>{driver.phone ? '+56 9 '+driver.phone : 'undefined'}</TableCell>
+              <TableCell>{driver.phone ? driver.phone : 'undefined'}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Id Usuario</TableCell>

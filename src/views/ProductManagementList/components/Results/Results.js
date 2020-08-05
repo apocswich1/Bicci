@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Results = props => {
-  const { className, products, sortAsc, sortDesc, actualizar, ...rest } = props;
+  const { className, products, sortAsc, sortDesc, actualizar, restaurantID, ...rest } = props;
   const t = translate;
   const classes = useStyles();
 
@@ -160,11 +160,13 @@ const Results = props => {
                       />
                     </TableCell>
                     <TableCell onClick={()=>sortData(products,'name',sort)}>{t("Name")}</TableCell>
-                    <TableCell onClick={()=>sortData(products,'category',sort)}>{t("Category")}</TableCell>
-                    <TableCell onClick={()=>sortData(products,'presentation',sort)}>{t("Presentation")}</TableCell>
-                    <TableCell onClick={()=>sortData(products,'productLine',sort)}>{t("ProductLine")}</TableCell>
-                    <TableCell onClick={()=>sortData(products,'treatment',sort)}>{t("Threatment")}</TableCell>
-                    <TableCell onClick={()=>sortData(products,'isActive',sort)}>{t("disabled")}</TableCell>
+                    <TableCell onClick={()=>sortData(products,'description',sort)}>{t("Description")}</TableCell>
+                    <TableCell onClick={()=>sortData(products,'price',sort)}>{t("Price")}</TableCell>
+                    <TableCell onClick={()=>sortData(products,'estimatedDeliveryTime',sort)}>{t("Estimated Delivery Time")}</TableCell>
+                    <TableCell onClick={()=>sortData(products,'stock',sort)}>{t("Stock")}</TableCell>
+                    <TableCell onClick={()=>sortData(products,'sku',sort)}>{t("Sku")}</TableCell>
+                    <TableCell onClick={()=>sortData(products,'approved',sort)}>{t("Approved")}</TableCell>
+                    <TableCell onClick={()=>sortData(products,'active',sort)}>{t("Active")}</TableCell>
                     {/*<TableCell>Reviews</TableCell>*/}
                     <TableCell align="right">{t("actions")}</TableCell>
                   </TableRow>
@@ -201,7 +203,7 @@ const Results = props => {
                             <Link
                               color="inherit"
                               component={RouterLink}
-                              to={`/management/products/${product.id}`}
+                              to={`/management/products/${product.id}/${restaurantID}`}
                               //to="/management/products/1"
                               variant="h6"
                             >
@@ -211,19 +213,21 @@ const Results = props => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{product.category}</TableCell>
+                      <TableCell>{product.description}</TableCell>
+                      <TableCell>{product.price}</TableCell>
                       <TableCell>
                         {/*product.currency*/}
                         {/*product.spent*/}
-                        {product.presentation}
+                        {product.estimatedDeliveryTime}
                       </TableCell>
-                      <TableCell>{product.productLine}</TableCell>
+                      <TableCell>{product.stock}</TableCell>
                       <TableCell>
                         {/*product.currency*/}
                         {/*product.spent*/}
-                        {product.treatment}
+                        {product.sku}
                       </TableCell>
-                      <TableCell>{new String(product.active != undefined ? product.active : true)}</TableCell>
+                      <TableCell>{new String(product.approved ? product.approved : false)}</TableCell>
+                      <TableCell>{new String(product.active ? product.active : false)}</TableCell>
                     {/*}  <TableCell>
                         <ReviewStars value={5} />
                         </TableCell>*/}
@@ -232,7 +236,7 @@ const Results = props => {
                           color="primary"
                           component={RouterLink}
                           size="small"
-                          to={`/management/products/${product.id}`}
+                          to={`/management/products/${product.id}/${restaurantID}`}
                           variant="outlined"
                         >
                           {t("view")}

@@ -186,6 +186,13 @@ const CategoryAdd = props => {
             >
               {T('Agregar')} Category
             </Typography>
+            <Typography
+              align="center"
+              gutterBottom
+              variant="h5"
+            >
+            Recomendación imagen: 720x240px, Formato JPEG, PNG. Máximo 2MB
+            </Typography>
             <Grid
               className={classes.container}
               container
@@ -202,7 +209,7 @@ const CategoryAdd = props => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid
+              {/* <Grid
                 item
                 md={6}
                 xs={12}
@@ -217,10 +224,10 @@ const CategoryAdd = props => {
                   error={formState.idError}
                   helperText={formState.idErrorMessage}
                 />
-              </Grid>
+              </Grid> */}
               <Grid
                 item
-                md={6}
+                md={12}
                 xs={12}
               >
                 <TextField

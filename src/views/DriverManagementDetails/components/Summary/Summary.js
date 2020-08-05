@@ -5,7 +5,7 @@ import { makeStyles, withStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 import firebase from 'utils/firebase';
 import axios from 'utils/axios';
-import { DriverInfo, Invoices, Avatar, Dni, License, SendEmails, OtherActions } from './components';
+import { DriverInfo, Invoices, Antecedentes, Avatar, Dni, License, SendEmails, OtherActions } from './components';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -178,6 +178,16 @@ console.log(props);
         xs={12}
       >
         <Dni driver={driver} actualizar={actualizar}/>
+      </Grid>
+      <br />
+      <Grid
+        item
+        lg={12}
+        md={12}
+        xl={12}
+        xs={12}
+      >
+        <Antecedentes driver={driver} actualizar={actualizar}/>
       </Grid>
       </Grid>
       {/*<Grid

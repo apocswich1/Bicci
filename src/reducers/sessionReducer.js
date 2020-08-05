@@ -10,7 +10,7 @@ const initialState = {
     bio: 'Brain Director',
     role: 'ADMIN' // ['GUEST', 'USER', 'ADMIN']
   },
-  roles: ['ADMIN', 'USER', 'GUEST', 'SUPERADMIN', 'FRANCHISE']
+  roles: ['ADMIN', 'USER', 'GUEST', 'SUPERADMIN', 'Administrator']
 };
 /*loggedIn: "",
   user: {
@@ -33,7 +33,7 @@ const sessionReducer = (state = initialState, action) => {
           //avatar: '/images/perfil2.png',
           avatar: action.user.avatar ? action.user.avatar : '/images/perfil2.png',
           bio: action.user.displayName,
-          role: action.user.role,
+          role: action.user.role ? action.user.role : "Administrator",
           id: action.user.uid,
           username: action.user.username // ['GUEST', 'USER', 'ADMIN']
           //  role: 'GUEST'
