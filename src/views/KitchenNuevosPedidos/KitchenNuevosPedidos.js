@@ -26,6 +26,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { preventDefault } from '@fullcalendar/core';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,10 +41,10 @@ const useStyles = makeStyles(theme => ({
 
 const KitchenNuevosPedidos = () => {
   const classes = useStyles();
-
+  const session = useSelector(state => state.session);
   const [ordenes, setOrdenes] = React.useState([]);
   const [scheduled, setScheduled] = React.useState([]);
-  const [orden, setOrden] = React.useState([]);
+  const [orden, setOrden] = useState([]);
   const [openDetalle, setOpenDetalle] = useState(false);
   const [open, setOpen] = useState(false);
   const [stop, setStop] = useState(true);
@@ -188,6 +189,7 @@ const KitchenNuevosPedidos = () => {
 
   const Actualizar = async (id) => {
     try {
+      console.log(id);
       const ordenRef = await firebase.firestore().collection('orders').doc(id).get();
       const ordenGroceryRef = await firebase.firestore().collection('orders').doc(id)
         .collection('groceries').get();
@@ -195,7 +197,7 @@ const KitchenNuevosPedidos = () => {
       let groceries = await ordenGroceryRef.docs.map(item => { return item.data() });
       let groce = []
       let todos = []
-      groceries.forEach((element, i) => {
+      groceries.forEach((element) => {
         console.log(element.ingredients);
         element.ingredients.forEach(async item => {
           let ingredientRef = await firebase.firestore().collection('ingredients').doc(item).get();
@@ -205,12 +207,14 @@ const KitchenNuevosPedidos = () => {
         element.ingredientes = groce;
         todos.push(element);
       });
+      console.log(resultado);
       setGrocery(todos);
       setOrden(resultado);
-      //setGrocery(groceries);
       setValuePestana(0);
+      
     } catch (error) {
       console.log(error);
+      console.log("Errorrrrrrrrrrr");
     }
   }
 
@@ -232,8 +236,10 @@ const KitchenNuevosPedidos = () => {
 
     fetchData();
 
+    
     return () => {
       mounted = false;
+      
     };
   }, []);
 
@@ -245,7 +251,7 @@ const KitchenNuevosPedidos = () => {
       setOrdenes(respuesta.filter(item => { return item.enCocina !== true && item.status == 2 }));
       setScheduled(respuesta.filter(item => { return item.scheduled == true}));
       setOpenDetalle(false);
-      setTimeout(function(){ setStop(false); }, 500);
+      setTimeout(function(){ setStop(false); }, 1000);
     } catch (error) {
       console.log(error);
     }
@@ -274,11 +280,11 @@ const KitchenNuevosPedidos = () => {
             disableElevation
             className={classes.rechazarButton}
             variant="contained"
-            onClick={handleCount}
+            // onClick={handleCount}
           >
-            {countdown}
+            {orden ? orden.length : 0}
           </Button>
-        </Grid> */}
+        </Grid>  */}
         {!(openDetalle===true) ? (
         <Grid item lg={12} xs={12}>
             {(stop ? (

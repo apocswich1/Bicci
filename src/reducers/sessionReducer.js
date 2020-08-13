@@ -35,6 +35,7 @@ const sessionReducer = (state = initialState, action) => {
           bio: action.user.displayName,
           role: action.user.role ? action.user.role : "Administrator",
           id: action.user.uid,
+          restaurantID: action.user.restaurantID,
           username: action.user.username // ['GUEST', 'USER', 'ADMIN']
           //  role: 'GUEST'
         }

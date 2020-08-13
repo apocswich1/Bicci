@@ -226,7 +226,7 @@ const DetalleOrden = props => {
               align="center"
               gutterBottom
               variant="h1"
-              style={{ color: "#ffffff", fontSize: 30 }}
+              style={{ color: "#ffffff", fontSize:"22px" }}
             >
               ENVIAR A COCINA
             </Typography>

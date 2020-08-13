@@ -19,6 +19,17 @@ export const login = (params) => {
         firebase.auth().currentUser.getIdToken(true).then(async function (idToken) {
           //const refUser = firebase.firestore().collection('users').doc(user.uid);
           // modificacion
+          const rest = await firebase.firestore().collection('restaurants')
+          .where('starredBy','==',user.uid).get();
+          const control = await rest.docs.map(item => {return item.data()})[0];
+          let restaurantID = "";
+          
+          if(control){
+            restaurantID = control.id;
+          }else{
+            restaurantID = "";
+          }
+
           const referencia = await firebase.firestore().collection('users').doc(user.uid).get();
           const res = referencia.data();
           
@@ -32,7 +43,9 @@ export const login = (params) => {
           // user.id = res.data().uid;
           user.role = res.role;
           user.id = res.uid;
+          user.restaurantID = restaurantID;
           user.username = username;
+
           if (user.role === "" || user.role === undefined) {
             dispatch({
               type: SESSION_LOGOUT

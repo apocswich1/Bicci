@@ -15,7 +15,7 @@ import moment from 'moment';
 const fecha = tiempo;
 const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: 1480,
+    maxWidth: 650,
     height: 150,
     "&:hover": {
       backgroundColor: '#b2ebf2'
@@ -60,7 +60,8 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     '&:first-of-type': {
       borderRight: `1px solid ${theme.palette.divider}`
-    }
+    },
+    marginRight: 5,
   },
   statsItem3: {
     padding: theme.spacing(1),
@@ -118,8 +119,8 @@ const OrderActivity = props => {
         </div>
         <div className={classes.statsContainer} id={row.id} onClick={(e) => changeColor(e)}>
           <div className={classes.statsItem1}>
-            <Typography
-              style={{ width: "500px" }}
+          <Typography
+              style={{ width: "200px", fontSize: "22px" }}
               align="left"
               variant="h2"
             >
@@ -130,7 +131,7 @@ const OrderActivity = props => {
           </div>
           <div className={classes.statsItem1}>
           <Typography
-              style={{ width: "850px" }}
+              style={{ width: "400px" }}
               align="right"
               variant="h2" className={classes.tipo3} color="textSecondary" component="p"
             >

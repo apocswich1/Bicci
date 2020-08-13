@@ -15,7 +15,7 @@ import moment from 'moment';
 const fecha = tiempo;
 const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: 1480,
+    maxWidth: 650,
     height: 150,
     "&:hover": {
       backgroundColor: '#b2ebf2'
@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
     '&:first-of-type': {
       borderRight: `1px solid ${theme.palette.divider}`
     },
-    marginRight: 30,
+    marginRight: 5,
   },
   boton: {
     padding: theme.spacing(1),
@@ -119,7 +119,7 @@ const OrderActivity = props => {
         <div className={classes.statsContainer} id={row.id} onClick={(e) => changeColor(e)}>
           <div className={classes.statsItem1}>
             <Typography
-              style={{ width: "200px" }}
+              style={{ width: "200px",fontSize: "22px" }}
               align="left"
               variant="h2"
             >
@@ -128,7 +128,7 @@ const OrderActivity = props => {
           </div>
           <div className={classes.statsItem1}>
           <Typography
-              style={{ width: "1150px" }}
+              style={{ width: "400px",fontSize: "16px" }}
               align="right"
               variant="h2" className={classes.tipo3} color="textSecondary" component="p"
             >
@@ -147,11 +147,11 @@ const OrderActivity = props => {
           </Typography>
           </div>
           <div className={classes.statsItem3}>
-            <Typography
+          <Typography
               align="right"
-              variant="h3"
+              style={{ fontSize: "28px" }}
             >
-              10:14
+              {tiempo.hora(row.date,15)}
             </Typography>
           </div>
         </div>

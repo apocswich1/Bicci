@@ -9,6 +9,7 @@ import DashboardAnalyticsView from './views/DashboardAnalytics';
 import DashboardKitchensView from './views/DashboardKitchen';
 import KitchenNuevosPedidos from './views/KitchenNuevosPedidos';
 import KitchenEnCocina from './views/KitchenEnCocina';
+import KitchenProgramados from './views/KitchenProgramados';
 import KitchenEntrega from './views/KitchenEntrega';
 import KitchenHistorial from './views/KitchenHistorial';
 import KitchenProductos from './views/KitchenProductos';
@@ -20,8 +21,8 @@ const routes = [
   {
     path: '/',
     exact: true,
-    component: () => <Redirect to="/overview" />
-    // component: () => <Redirect to="/dashboards/nuevos" />
+   // component: () => <Redirect to="/overview" />
+     component: () => <Redirect to="/dashboards/nuevos" />
   },
   {
     path: '/auth',
@@ -109,6 +110,11 @@ const routes = [
         path: '/dashboards/encocina',
         exact: true,
         component: KitchenEnCocina
+      },
+      {
+        path: '/dashboards/programados',
+        exact: true,
+        component: KitchenProgramados
       },
       {
         path: '/dashboards/entrega',

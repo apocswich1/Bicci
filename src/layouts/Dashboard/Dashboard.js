@@ -25,8 +25,8 @@ const useStyles = makeStyles(() => ({
   },
   navBar: {
     zIndex: 3,
-    width: 256,
-    minWidth: 256,
+    width: 210,
+    minWidth: 190,
     flex: '0 0 auto'
   },
   content: {

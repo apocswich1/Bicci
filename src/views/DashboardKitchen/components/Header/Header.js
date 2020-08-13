@@ -90,7 +90,7 @@ const Header = props => {
             gutterBottom
             variant="h3"
           >
-            Bicci Cocina
+            Bicci Pos
           </Typography>
         </Grid>
         {/* <Grid

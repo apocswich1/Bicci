@@ -128,10 +128,9 @@ function createData(name, code, population, size) {
     
     document.getElementById(id).classList.add(classes.seleccionado);
     if(anterior!=="" && anterior !== id){
-      
       document.getElementById(anterior).classList.remove(classes.seleccionado);
     }
-    
+
     setAnterior(id);
     setOrden(id);
     setOpenDetalle(true);
@@ -153,14 +152,16 @@ function createData(name, code, population, size) {
 
     };
 
+    return;
     return () => {
       mounted = false;
     };
   }, []);
   const status = orden.length < 1 ? "disabled" : "";
+  console.log(anterior);
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="default">
+      {/* <AppBar position="static" color="default">
         <Tabs
           value={value}
           onChange={handleChange}
@@ -170,14 +171,13 @@ function createData(name, code, population, size) {
           aria-label="full width tabs example"
         >
           <Tab label="Ahora" {...a11yProps(0)} />
-          <Tab label="Programados" {...a11yProps(1)} />
-        </Tabs>
-      </AppBar>
+          {/* <Tab label="Programados" {...a11yProps(1)} /> 
+        </Tabs> 
+      </AppBar> */}
       <SwipeableViews
         axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
         index={value}
-        onChangeIndex={handleChangeIndex}
-      >
+        onChangeIndex={handleChangeIndex}>
         <TabPanel value={value} index={0} dir={theme.direction}>
           <Paper className={classes.root}>
             <TableContainer className={classes.container}>
@@ -190,41 +190,6 @@ function createData(name, code, population, size) {
                           const value = row[column.id];
                           return (
                             <TableCell key={column.id} align={column.align}>
-                              {/* {column.format && typeof value === 'number' ? column.format(value) : value} */}
-                              <OrderActivity row={row} changeColor={changeColor} />
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-            />
-          </Paper>
-        </TabPanel>
-        <TabPanel value={value} index={1} dir={theme.direction}>
-        <Paper className={classes.root}>
-            <TableContainer className={classes.container}>
-              <Table stickyHeader aria-label="sticky table">
-                <TableBody>
-                  {scheduled.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    return (
-                      <TableRow style={{ height: "100px" }} role="checkbox" tabIndex={-1} key={row.id}>
-                        {columns.map((column) => {
-                          const value = row[column.id];
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {/* {column.format && typeof value === 'number' ? column.format(value) : value} */}
                               <OrderActivity row={row} changeColor={changeColor} />
                             </TableCell>
                           );

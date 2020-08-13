@@ -388,8 +388,13 @@ const TopBar = props => {
             Trial expired
           </Button>*/}
         </Hidden>
-        <Hidden mdDown>
-          {(session.user.role !== "ADMIN" && props.location.pathname == "/dashboards/nuevos") && (
+        {/* <Hidden mdDown> */}
+          {(session.user.role !== "ADMIN" && props.location.pathname == "/dashboards/nuevos"
+          || props.location.pathname !== "/dashboards/programados"
+          || props.location.pathname !== "/dashboards/encocina"
+          || props.location.pathname !== "/dashboards/historial"
+          || props.location.pathname !== "/dashboards/entrega"
+          || props.location.pathname !== "/dashboards/productos") && (
             <React.Fragment>
               <FormGroup row>
                 <Typography
@@ -418,6 +423,7 @@ const TopBar = props => {
           )}
           
           {(props.location.pathname !== "/dashboards/nuevos"
+          && props.location.pathname !== "/dashboards/programados"
           && props.location.pathname !== "/dashboards/encocina"
           && props.location.pathname !== "/dashboards/historial"
           && props.location.pathname !== "/dashboards/entrega"
@@ -445,7 +451,7 @@ const TopBar = props => {
             <InputIcon className={classes.logoutIcon} />
             {t("Sign out")}
           </Button>
-        </Hidden>
+        {/* </Hidden> */}
         <Hidden lgUp>
           <IconButton
             color="inherit"

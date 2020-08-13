@@ -18,7 +18,7 @@ import Switch from '@material-ui/core/Switch';
 const fecha = tiempo;
 const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: 1480,
+    maxWidth: 650,
     height: 60,
     "&:hover": {
       backgroundColor: '#b2ebf2'
@@ -176,7 +176,7 @@ const OrderIngredients = props => {
         <div className={classes.statsContainer} id={row.id} onClick={(e) => changeColor(e)}>
           <div className={classes.statsItem1}>
             <Typography
-              style={{ width: "500px" }}
+              style={{ width: "400px" }}
               align="left"
               variant="h2"
             >
@@ -185,7 +185,7 @@ const OrderIngredients = props => {
           </div>
           <div className={classes.statsItem1}>
           <Typography
-              style={{ width: "850px",marginTop:"-10px" }}
+              style={{ width: "200px",marginTop:"-10px" }}
               align="right"
               variant="h2" className={classes.tipo3} color="textSecondary" component="p"
             >

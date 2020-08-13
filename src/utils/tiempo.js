@@ -21,9 +21,15 @@ const tiempo = {
         return moment(new Date(fecha.seconds * 1000)).format('DD MMMM YYYY');
     },
     hora: (fecha, minutos)=>{
+        if(fecha === undefined){
+            return "";
+        }
         return moment(new Date(fecha.seconds * 1000)).add(minutos,'minutes').format('hh:mm');
     },
     horaSeconds: (fecha)=>{
+        if(fecha === undefined){
+            return "";
+        }
         return moment(new Date(fecha._seconds * 1000)).format('hh:mm');
     },
     horaCorta: (fecha)=>{

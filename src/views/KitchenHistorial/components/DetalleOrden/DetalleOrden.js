@@ -89,7 +89,8 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     '&:first-of-type': {
       borderRight: `1px solid ${theme.palette.divider}`
-    }
+    },
+    marginRight: "10px"
   },
   statsItemHora: {
     padding: theme.spacing(1),
@@ -170,16 +171,16 @@ const DetalleOrden = props => {
         <Divider style={{ marginTop: "20px", marginBottom: "20px" }} />
         <div className={classes.statsContainer} key={orden.id}>
           <div className={classes.statsItem1}>
-            <Typography align="left" variant="h2" style={{ marginLeft:"55px" }}>
+          <Typography align="left" variant="h2" style={{ marginLeft:"10px", fontSize:"22px" }}>
               {orden.userName} ({orden.userPhone})
             </Typography>
-            <Typography align="left" style={{ paddingTop: "10px",marginLeft:"55px" }} variant="h3">
+            <Typography align="left" style={{ paddingTop: "10px",marginLeft:"10px" }} variant="h3">
               {orden.id}
             </Typography>
           </div>
           <div className={classes.statsItem2}>
-            <Typography align="right" variant="h3" style={{ marginRight:"55px", fontWeight:"normal" }}>{"Hora recolección"}</Typography>
-            <Typography align="right" variant="h1" style={{ paddingTop: "10px",marginRight:"55px" }}>{tiempo.hora(orden.date,15)}</Typography>
+          <Typography align="right" variant="h3" style={{ marginRight:"5px", fontWeight:"normal", fontSize:"16px" }}>{"Hora recolección"}</Typography>
+            <Typography align="right" variant="h1" style={{ paddingTop: "5px",marginRight:"10px", fontSize:"28px" }}>{orden.date && tiempo.hora(orden.date,15)}</Typography>
           </div>
         </div>
         <Divider style={{ marginTop: "20px", marginBottom: "20px" }} s />
@@ -188,7 +189,7 @@ const DetalleOrden = props => {
             <React.Fragment>
               <div className={classes.statsContainer} key={element.id}>
                 <div className={classes.statsItem1}>
-                  <Typography align="left" variant="h3" style={{ marginLeft:"55px" }}>
+                <Typography align="left" variant="h3" style={{ marginLeft:"10px" }}>
                     {element.quantity} {element.name}
                   </Typography>
                   <Typography align="left" variant="h4" style={{ color: "#64D3DE", marginLeft: "60px" }}>
@@ -205,7 +206,7 @@ const DetalleOrden = props => {
                   </Typography>
                 </div>
                 <div className={classes.statsItem2}>
-                  <Typography align="center" variant="h3">{formatter.format(element.price)}</Typography>
+                  <Typography align="right" variant="h3">{formatter.format(element.price)}</Typography>
                 </div>
               </div>
               {element.ingredientsNames && element.ingredientsNames.map(item => {
@@ -216,14 +217,21 @@ const DetalleOrden = props => {
           )
         })}
         <CardActions className={classes.actions}>
+          <Button
+            className={classes.saveButton}
+            onClick={enviarCocina}
+            variant="contained"
+            disableElevation
+          >
             <Typography
               align="center"
               gutterBottom
               variant="h1"
-              style={{ color: "#000000", fontSize: 30 }}
+              style={{ color: "#ffffff", fontSize:"22px" }}
             >
-              ENTREGADO A DRIVER
+              LISTO PARA ENTREGA
             </Typography>
+          </Button>
         </CardActions>
       </Card>
     ) : (

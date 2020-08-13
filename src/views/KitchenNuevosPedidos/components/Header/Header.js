@@ -95,15 +95,17 @@ const Header = props => {
             gutterBottom
             variant="h3"
           >
-            Bicci Cocina
+            {!openDetalle && (
+              "Bicci pos"
+            )}
             {openDetalle && (
               <Link
               color="inherit"
               component={RouterLink}
               to="#!"
               onClick={changeStatus}
-              variant="h3"
-              > / Nuevos Pedidos</Link>
+              variant="h5"
+              > {"<- Volver"}</Link>
             )}
           </Typography>
         </Grid>

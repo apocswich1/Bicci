@@ -33,7 +33,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import { DatePicker } from '@material-ui/pickers';
 import CalendarTodayIcon from '@material-ui/icons/CalendarTodayOutlined';
 import firebase from 'utils/firebase';
-import geocode from 'utils/geocode';
+//import geocode from 'utils/geocode';
+import Geocode from "react-geocode";
 //import { GeoPoint } from '@google-cloud/firestore';
 const T = translate;
 
@@ -84,15 +85,15 @@ const RestaurantAdd = props => {
   const [cboZones, setCboZones] = React.useState([]);
   const [directions, setDirections] = useState("");
   const [formState, setFormState] = useState({
-    ...restaurant, cboDistrict,cboZones,
-    owt,cwt,owdt,cwdt
+    ...restaurant, cboDistrict, cboZones,
+    owt, cwt, owdt, cwdt
   });
 
   const handleOWTChange = date => {
     setOwt(date);
     setFormState(formState => ({
       ...formState,
-      owt:date
+      owt: date
     }));
     console.log(new Date(owt));
   };
@@ -101,7 +102,7 @@ const RestaurantAdd = props => {
     setCwt(date);
     setFormState(formState => ({
       ...formState,
-      cwt:date
+      cwt: date
     }));
   };
 
@@ -109,7 +110,7 @@ const RestaurantAdd = props => {
     setOwdt(date);
     setFormState(formState => ({
       ...formState,
-      owdt:date
+      owdt: date
     }));
   };
 
@@ -117,10 +118,10 @@ const RestaurantAdd = props => {
     setCwdt(date);
     setFormState(formState => ({
       ...formState,
-      cwdt:date
+      cwdt: date
     }));
   };
-  
+
   const handleDateChange = date => {
     setSelectedDate(date);
   };
@@ -161,7 +162,7 @@ const RestaurantAdd = props => {
 
   const openn = Boolean(selectEdge);
 
-  
+
   if (!open) {
     return null;
   }
@@ -188,39 +189,39 @@ const RestaurantAdd = props => {
     let phoneErrorMessage = "";
     let latitudeErrorMessage = "";
     let longitudeErrorMessage = "";
-    
-    
-    if(!formState.name){
+
+
+    if (!formState.name) {
       nameError = "Debe introducir un nombre";
       nameErrorMessage = "Debe introducir un nombre";
     }
 
-    if(!formState.latitude){
+    if (!formState.latitude) {
       latitudeError = "Debe introducir una latitud";
       latitudeErrorMessage = "Debe introducir una latitud";
     }
 
-    if(!formState.longitude){
+    if (!formState.longitude) {
       longitudeError = "Debe introducir una longitud";
       longitudeErrorMessage = "Debe introducir una longitud";
     }
 
-    
-    if(!formState.phone){
+
+    if (!formState.phone) {
       phoneError = "Debe introducir un phone valido";
       phoneErrorMessage = "Debe introducir un phone valido";
     }
 
-    if(!formState.address){
+    if (!formState.address) {
       addressError = "Debe introducir un address valido";
       addressErrorMessage = "Debe introducir un address valido";
     }
 
-    if(nameError || phoneError){
+    if (nameError || phoneError) {
       setFormState(formState => ({
         ...formState,
-        nameError,emailError,phoneError,passwordRepeatError,dniError,addressError,
-        nameErrorMessage,emailErrorMessage,phoneErrorMessage,dniErrorMessage,addressErrorMessage
+        nameError, emailError, phoneError, passwordRepeatError, dniError, addressError,
+        nameErrorMessage, emailErrorMessage, phoneErrorMessage, dniErrorMessage, addressErrorMessage
       }));
       return false;
     }
@@ -230,56 +231,56 @@ const RestaurantAdd = props => {
   const handleChangeCategory = async event => {
     event.persist();
     let categories = [];
-        setFormState(formState => ({
-          ...formState,
-          'categoryID':event.target.value,
-          'categoryName':event._targetInst.memoizedProps.children[0][0]
-        }));      
+    setFormState(formState => ({
+      ...formState,
+      'categoryID': event.target.value,
+      'categoryName': event._targetInst.memoizedProps.children[0][0]
+    }));
   }
 
   const handleChangeRegion = async event => {
     event.persist();
     const regionRef = await firebase.firestore().collection('zones').doc(event.target.value)
-    .collection('districts').get();
+      .collection('districts').get();
 
-        setFormState(formState => ({
-          ...formState,
-          'regionID':event.target.value,
-          'regionName':event._targetInst.memoizedProps.children[0][0],
-          'cboDistrict': regionRef.docs.map(d => { return d.data() })
-        }));      
+    setFormState(formState => ({
+      ...formState,
+      'regionID': event.target.value,
+      'regionName': event._targetInst.memoizedProps.children[0][0],
+      'cboDistrict': regionRef.docs.map(d => { return d.data() })
+    }));
   }
 
   const handleChangeDistrict = async event => {
     event.persist();
     const districtRef = await firebase.firestore().collection('zones').doc(formState.regionID)
-    .collection('districts').doc(event.target.value).collection('zones').get();
+      .collection('districts').doc(event.target.value).collection('zones').get();
 
-        setFormState(formState => ({
-          ...formState,
-          'districtID':event.target.value,
-          'districtName':event._targetInst.memoizedProps.children[0][0],
-          'cboZones': districtRef.docs.map(d => { return d.data() })
-        }));      
+    setFormState(formState => ({
+      ...formState,
+      'districtID': event.target.value,
+      'districtName': event._targetInst.memoizedProps.children[0][0],
+      'cboZones': districtRef.docs.map(d => { return d.data() })
+    }));
   }
 
   const handleChangeZone = async event => {
     event.persist();
-    
-        setFormState(formState => ({
-          ...formState,
-          'zoneID':event.target.value,
-          'zoneName':event._targetInst.memoizedProps.children[0][0]
-        }));      
+
+    setFormState(formState => ({
+      ...formState,
+      'zoneID': event.target.value,
+      'zoneName': event._targetInst.memoizedProps.children[0][0]
+    }));
   }
 
   const handleChangeAdministrator = async event => {
     event.persist();
-        setFormState(formState => ({
-          ...formState,
-          'administratorID':event.target.value,
-          'administratorName':event._targetInst.memoizedProps.children[0][0]
-        }));      
+    setFormState(formState => ({
+      ...formState,
+      'administratorID': event.target.value,
+      'administratorName': event._targetInst.memoizedProps.children[0][0]
+    }));
   }
 
   const handleFieldChange = event => {
@@ -295,31 +296,53 @@ const RestaurantAdd = props => {
 
   const handleDirectionsChange = event => {
     event.persist();
-    geocode.direccion(event.target.value).then(item=>{
+    try {
+      //geocode.direccion(event.target.value).then(item=>{
       setFormState(formState => ({
         ...formState,
-        ['latitude']: item.lat,
-        ['longitude']: item.lng,
+        //  ['latitude']: item.lat,
+        //  ['longitude']: item.lng,
         ['address']: event.target.value
       }));
 
-    console.log(item);
-    });
+      //console.log(item);
+      //});      
+
+    } catch (error) {
+      console.log(error);
+    }
+
   };
 
-  const handleSave = (event) => {
+  const handleSave = async (event) => {
     event.preventDefault();
     console.log(formState);
     let msg = "Usuarios creado con exito";
     const isValid = validateForm();
-    if(isValid){
+    if (isValid) {
       setLoading(true);
+      // set Google Maps Geocoding API for purposes of quota management. Its optional but recommended.
+      Geocode.setApiKey("AIzaSyAasrq37Oc5edRFZ1Am5SW6ay0iffy9Wbo");
+      // set response language. Defaults to english.
+      Geocode.setLanguage("en");
+      // set response region. Its optional.
+      Geocode.setRegion("es");
+      // Enable or disable logs. Its optional.
+      Geocode.enableDebug();
+
+      let datos = await Geocode.fromAddress(formState.address);
       
-      let fecha1 = new Date(moment(endDate).format('YYYY-MM-DD').toString()+"T"+moment(owt).add('hours',4).format('HH:mm').toString()+":00Z");
-      let fecha2 = new Date(moment(endDate).format('YYYY-MM-DD').toString()+"T"+moment(cwt).add('hours',4).format('HH:mm').toString()+":00Z");
-      let fecha3 = new Date(moment(endDate).format('YYYY-MM-DD').toString()+"T"+moment(owdt).add('hours',4).format('HH:mm').toString()+":00Z");
-      let fecha4 = new Date(moment(endDate).format('YYYY-MM-DD').toString()+"T"+moment(cwdt).add('hours',4).format('HH:mm').toString()+":00Z");
+      let result = await datos.results[0].geometry.location;
+
+      let lat = result.lat;
       
+      let lng = result.lng;
+
+      let fecha1 = new Date(moment(endDate).format('YYYY-MM-DD').toString() + "T" + moment(owt).add('hours', 4).format('HH:mm').toString() + ":00Z");
+      let fecha2 = new Date(moment(endDate).format('YYYY-MM-DD').toString() + "T" + moment(cwt).add('hours', 4).format('HH:mm').toString() + ":00Z");
+      let fecha3 = new Date(moment(endDate).format('YYYY-MM-DD').toString() + "T" + moment(owdt).add('hours', 4).format('HH:mm').toString() + ":00Z");
+      let fecha4 = new Date(moment(endDate).format('YYYY-MM-DD').toString() + "T" + moment(cwdt).add('hours', 4).format('HH:mm').toString() + ":00Z");
+
       let params = {
         "active": formState.active ? formState.active : true,
         "scheduledAllowed": formState.scheduledAllowed ? formState.scheduledAllowed : true,
@@ -341,36 +364,32 @@ const RestaurantAdd = props => {
         "zoneName": formState.zoneName,
         "zoneID": formState.zoneID,
         "address": formState.address,
-        "lat": +formState.latitude,
-        "long": +formState.longitude
+        "lat": +lat,
+        "long": +lng
       }
 
       console.log(params);
-      //return;
-      fetch(service+'createPlacesAdmin', {
-          method: 'post',
-          mode: 'cors',
-          body: JSON.stringify(params)
-        }).then(function (respuesta) {
-          respuesta.json().then(body => {
-            console.log(body);
-            actualizar(msg,body);
-            });
-        }).catch(function (err) {
-          // Error :(
-            console.log(err);
+      
+      fetch(service + 'createPlacesAdmin', {
+        method: 'post',
+        mode: 'cors',
+        body: JSON.stringify(params)
+      }).then(function (respuesta) {
+        respuesta.json().then(body => {
+          console.log(body);
+          actualizar(msg, body);
         });
+      }).catch(function (err) {
+        // Error :(
+        console.log(err);
+      });
 
       onClose();
       setFormState(formState => ({}));
     }
 
   };
-  
-  geocode.direccion("Torre eiffel").then(item=>{
-    
-  console.log(item);
-  });
+
 
   return (
     <Modal
@@ -541,9 +560,9 @@ const RestaurantAdd = props => {
                   variant="outlined"
                   error={formState.phoneError}
                   helperText={formState.phoneErrorMessage}
-                  // InputProps={{
-                  //   startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
-                  // }}
+                // InputProps={{
+                //   startAdornment: <InputAdornment position="start">+56 9</InputAdornment>,
+                // }}
                 />
               </Grid>
               {/* <Grid
@@ -693,7 +712,7 @@ const RestaurantAdd = props => {
                   fullWidth
                   label={T("address")}
                   name="address"
-                  onChange={handleDirectionsChange}
+                  onChange={handleFieldChange}
                   value={formState.address}
                   variant="outlined"
                   error={formState.addressError}

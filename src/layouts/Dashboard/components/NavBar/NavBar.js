@@ -11,7 +11,7 @@ import { Navigation } from 'components';
 import navigationConfig from './navigationConfig';
 import navigationConfigPlace from './navigationConfigPlace';
 import NavBarVertical from './NavBarVertical';
-
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,7 +49,6 @@ const NavBar = props => {
   const router = useRouter();
   const session = useSelector(state => state.session);
 
-  
 
   useEffect(() => {
     if (openMobile) {
@@ -105,7 +104,7 @@ const NavBar = props => {
 
   return (
     <Fragment>
-      <Hidden lgUp>
+      {/* <Hidden lgUp>
         <Drawer
           anchor="left"
           onClose={onMobileClose}
@@ -119,22 +118,23 @@ const NavBar = props => {
             {navbarContent}
           </div>
         </Drawer>
-      </Hidden>
-      <Hidden mdDown>
+      </Hidden> */}
+      {/* <Hidden mdDown> */}
         <Paper
           {...rest}
           className={clsx(classes.root, className)}
           elevation={1}
           square
         >
-           {/* <NavBarVertical icono={1} titulo="Nuevos Pedidos" link={`/dashboards/nuevos`}/>
-           <NavBarVertical icono={2} titulo="En Cocina" link={`/dashboards/encocina`}/>
-           <NavBarVertical icono={3} titulo="Entrega" link={`/dashboards/entrega`}/>
-           <NavBarVertical icono={4} titulo="Historial" link={`/dashboards/historial`}/>
-           <NavBarVertical icono={5} titulo="Productos" link={`/dashboards/productos`}/> */}
-           {navbarContent}
+           <NavBarVertical icono={1} marcado={props.location.pathname == "/dashboards/nuevos" ? true : false} titulo="Nuevos Pedidos" link={`/dashboards/nuevos`}/>
+           <NavBarVertical icono={6} marcado={props.location.pathname == "/dashboards/programados" ? true : false} titulo="Programados" link={`/dashboards/programados`}/>
+           <NavBarVertical icono={2} marcado={props.location.pathname == "/dashboards/encocina" ? true : false} titulo="En Cocina" link={`/dashboards/encocina`}/>
+           <NavBarVertical icono={3} marcado={props.location.pathname == "/dashboards/entrega" ? true : false} titulo="Entrega" link={`/dashboards/entrega`}/>
+           <NavBarVertical icono={4} marcado={props.location.pathname == "/dashboards/historial" ? true : false} titulo="Historial" link={`/dashboards/historial`}/>
+           <NavBarVertical icono={5} marcado={props.location.pathname == "/dashboards/productos" ? true : false} titulo="Productos" link={`/dashboards/productos`}/>
+           {/* {navbarContent} */}
         </Paper>
-      </Hidden>
+      {/* </Hidden> */}
     </Fragment>
   );
 };
@@ -145,4 +145,4 @@ NavBar.propTypes = {
   openMobile: PropTypes.bool
 };
 
-export default NavBar;
+export default withRouter(NavBar);

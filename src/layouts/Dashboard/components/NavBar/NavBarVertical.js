@@ -27,6 +27,8 @@ import RestoreIcon from '@material-ui/icons/Restore';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import Badge from '@material-ui/core/Badge';
 import firebase from 'utils/firebase';
+import EventOutlined from '@material-ui/icons/EventOutlined';
+import { withRouter } from 'react-router-dom';
 
 function TabPanel(props) {
     const { children, value, index, icono, ...other } = props;
@@ -71,10 +73,10 @@ const useStyles = makeStyles(theme => ({
         //   left: '50%',
         //  transform: 'translate(-50%, -50%)',
         outline: 'none',
-        boxShadow: theme.shadows[3],
+       // boxShadow: theme.shadows[3],
         marginLeft: "10px",
-        width: 230,
-        height: 180,
+        width: 180,
+        height: 140,
         maxHeight: '100%',
         //overflowY: 'auto',
         maxWidth: '100%',
@@ -119,42 +121,43 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-
-export default function NavBarVertical(props) {
+const NavBarVertical = (props) => {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
     const [pedidos, setPedidos] = React.useState([]);
-    const { open, onClose, category, titulo, link, icono, countdown, handleStatus, actualizar, setLoading, className, ...rest } = props;
+    const { open, onClose, category, titulo, link, icono, countdown, handleStatus, actualizar, setLoading, className, marcado, ...rest } = props;
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+    let color = marcado ? "#8937E9" : "#ffffff";
+    let texto = !marcado ? "#8937E9" : "#ffffff";
 
     useEffect(() => {
         let mounted = true;
-    
+        
         let doc = firebase.firestore().collection('orders').where('status', '==', 2);
         const observer = doc.onSnapshot(docSnapshot => {
-          let data = [];
-          docSnapshot.docChanges().forEach(function (change) {
-    
-            if (change.type === "added") {
-              console.log("New order: ", change.doc.data());
-              data.push(change.doc.data().id);
-            }
-    
-          });
-          
-          setPedidos(pedidos => [...pedidos].concat(data));
-    
+            let data = [];
+            docSnapshot.docChanges().forEach(function (change) {
+
+                if (change.type === "added") {
+                 //   console.log("New order: ", change.doc.data());
+                    data.push(change.doc.data().id);
+                }
+
+            });
+
+            setPedidos(pedidos => [...pedidos].concat(data));
+
         }, err => {
-          console.log(`Encountered error: ${err}`);
+            console.log(`Encountered error: ${err}`);
         });
-    
+
         return () => {
-          mounted = false;
+            mounted = false;
         };
-      }, []);
+    }, []);
 
     const Icon = (props) => {
         //     return <FastfoodIcon style={{ color: '#ffffff', fontSize: 80 }} />
@@ -164,29 +167,67 @@ export default function NavBarVertical(props) {
                 // code block
                 return (
                     <Badge badgeContent={props.pedidos} color="error" style={{ fontSize: "28px" }}>
-                        <FastfoodIcon style={{ color: '#8937E9', fontSize: 80 }} />
+                        {(props.pathname == "/dashboards/nuevos") ?
+                            <FastfoodIcon style={{ color: '#ffffff', fontSize: 60 }} />
+                            :
+                            <FastfoodIcon style={{ color: '#8937E9', fontSize: 60 }} />
+                        }
                     </Badge>
                 )
                 break;
             case 2:
                 // code block
-                return <WhatshotIcon style={{ color: '#8937E9', fontSize: 80 }} />
+                return(
+                (props.pathname == "/dashboards/encocina") ?
+                            <WhatshotIcon style={{ color: '#ffffff', fontSize: 60 }} />
+                            :
+                            <WhatshotIcon style={{ color: '#8937E9', fontSize: 60 }} />
+                )
+                // return <WhatshotIcon style={{ color: '#8937E9', fontSize: 60 }} />
                 break;
             case 3:
                 // code block
-                return <LocalMallIcon style={{ color: '#8937E9', fontSize: 80 }} />
+                return(
+                    (props.pathname == "/dashboards/entrega") ?
+                                <LocalMallIcon style={{ color: '#ffffff', fontSize: 60 }} />
+                                :
+                                <LocalMallIcon style={{ color: '#8937E9', fontSize: 60 }} />
+                    )
+                    // return <LocalMallIcon style={{ color: '#8937E9', fontSize: 60 }} />
                 break;
             case 4:
                 // code block
-                return <RestoreIcon style={{ color: '#8937E9', fontSize: 80 }} />
+                return(
+                    (props.pathname == "/dashboards/historial") ?
+                                <RestoreIcon style={{ color: '#ffffff', fontSize: 60 }} />
+                                :
+                                <RestoreIcon style={{ color: '#8937E9', fontSize: 60 }} />
+                    )
+                    // return <RestoreIcon style={{ color: '#8937E9', fontSize: 60 }} />
                 break;
             case 5:
                 // code block
-                return <ShoppingCartIcon style={{ color: '#8937E9', fontSize: 80 }} />
+                return(
+                    (props.pathname == "/dashboards/productos") ?
+                                <ShoppingCartIcon style={{ color: '#ffffff', fontSize: 60 }} />
+                                :
+                                <ShoppingCartIcon style={{ color: '#8937E9', fontSize: 60 }} />
+                    )
+                    // return <ShoppingCartIcon style={{ color: '#8937E9', fontSize: 60 }} />
+                break;
+            case 6:
+                // code block
+                return(
+                    (props.pathname == "/dashboards/programados") ?
+                                <EventOutlined style={{ color: '#ffffff', fontSize: 60 }} />
+                                :
+                                <EventOutlined style={{ color: '#8937E9', fontSize: 60 }} />
+                    )
+                    // return <EventOutlined style={{ color: '#8937E9', fontSize: 60 }} />
                 break;
             default:
                 // code block
-                return <ShoppingCartIcon style={{ color: '#8937E9', fontSize: 80 }} />
+                return <ShoppingCartIcon style={{ color: '#8937E9', fontSize: 60 }} />
         }
     }
 
@@ -201,13 +242,13 @@ export default function NavBarVertical(props) {
             variant="h6"
         >
             <div className={classes.root}>
-                <Card {...rest} className={clsx(classes.root, className)}>
+                <Card {...rest} className={clsx(classes.root, className)} style={{backgroundColor: color}}>
                     <form>
                         <CardContent>
                             <Typography align="center" gutterBottom variant="h1">
-                                <Icon icono={icono} pedidos={pedidos.length}/>
+                                <Icon pathname={props.location.pathname} icono={icono} pedidos={pedidos.length} />
                             </Typography>
-                            <Typography align="center" gutterBottom variant="h4">
+                            <Typography align="center" gutterBottom variant="h4" style={{fontSize:"16px", color: texto}}>
                                 {titulo}
                             </Typography>
                         </CardContent>
@@ -217,3 +258,6 @@ export default function NavBarVertical(props) {
         </Link>
     );
 }
+
+
+export default withRouter(NavBarVertical);

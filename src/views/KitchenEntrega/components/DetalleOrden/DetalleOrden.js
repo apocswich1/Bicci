@@ -170,16 +170,16 @@ const DetalleOrden = props => {
         <Divider style={{ marginTop: "20px", marginBottom: "20px" }} />
         <div className={classes.statsContainer} key={orden.id}>
           <div className={classes.statsItem1}>
-            <Typography align="left" variant="h2" style={{ marginLeft:"55px" }}>
+            <Typography align="left" variant="h2" style={{ marginLeft:"10px", fontSize:"22px" }}>
               {orden.userName} ({orden.userPhone})
             </Typography>
-            <Typography align="left" style={{ paddingTop: "10px",marginLeft:"55px" }} variant="h3">
+            <Typography align="left" style={{ paddingTop: "10px",marginLeft:"10px", fontSize:"22px" }} variant="h3">
               {orden.id}
             </Typography>
           </div>
           <div className={classes.statsItem2}>
-            <Typography align="right" variant="h3" style={{ marginRight:"55px", fontWeight:"normal" }}>{"Hora recolección"}</Typography>
-            <Typography align="right" variant="h1" style={{ paddingTop: "10px",marginRight:"55px" }}>{tiempo.hora(orden.date,15)}</Typography>
+          <Typography align="right" variant="h3" style={{ marginRight:"5px", fontWeight:"normal", fontSize:"16px" }}>{"Hora recolección"}</Typography>
+            <Typography align="right" variant="h1" style={{ paddingTop: "5px",marginRight:"10px", fontSize:"28px" }}>{orden.date && tiempo.hora(orden.date,15)}</Typography>
           </div>
         </div>
         <Divider style={{ marginTop: "20px", marginBottom: "20px" }} s />
@@ -188,7 +188,7 @@ const DetalleOrden = props => {
             <React.Fragment>
               <div className={classes.statsContainer} key={element.id}>
                 <div className={classes.statsItem1}>
-                  <Typography align="left" variant="h3" style={{ marginLeft:"55px" }}>
+                  <Typography align="left" variant="h3" style={{ marginLeft:"10px", fontSize:"22px" }}>
                     {element.quantity} {element.name}
                   </Typography>
                   <Typography align="left" variant="h4" style={{ color: "#64D3DE", marginLeft: "60px" }}>
@@ -226,7 +226,7 @@ const DetalleOrden = props => {
               align="center"
               gutterBottom
               variant="h1"
-              style={{ color: "#ffffff", fontSize: 30 }}
+              style={{ color: "#ffffff", fontSize:"22px" }}
             >
               ENTREGADO A DRIVER
             </Typography>
